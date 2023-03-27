@@ -1,0 +1,22 @@
+process:
+  Calculator:
+    inputs:
+      - a
+      - b
+      - c
+    steps:
+      firstSum:
+        type: 'Task'
+        name: 'Add'
+        arguments:
+          value1: '${input:a}'
+          value2: '${input:b}'
+      secondSum:
+        type: 'Task'
+        name: 'Add'
+        arguments: 
+          value1: '${firstSum:result}'
+          value2: '${input:c}'
+    results:
+      result: ${secondSum:result}'
+    
