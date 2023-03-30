@@ -1,6 +1,6 @@
 {
   "name": "prostep-js",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "description": "A JS Task Library",
   "license": "MIT",
   "main": "dist/index.js",
