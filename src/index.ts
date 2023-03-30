@@ -1,14 +1,19 @@
 import { ProcessConfig, TaskConfig } from "./lib/processConfig";
 import { Process } from "./lib/processRuntime";
+import Logger from './lib/logger';
+import { dirname } from "path";
 
 
 export default class ProStepJS {
 
     private static inst: ProStepJS;
     private process: Process | undefined;
+    private logger = Logger.getLogger("ProStepJS");
     
     private constructor() {
-        
+        if(require.main)
+            this.logger.info(require.main.filename);
+            module.paths.forEach(m => this.logger.info(m));
     }
 
     public async loadConfigFromFile(filePath: string) {
@@ -43,3 +48,7 @@ export default class ProStepJS {
     }
 
 }
+
+export * from './lib/logger';
+export * from './lib/processConfig';
+export * from './lib/processRuntime';

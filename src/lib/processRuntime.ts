@@ -1,5 +1,6 @@
 import Logger from "./logger";
 import { ProcessConfig, Step, TaskConfig, StepType } from "./processConfig";
+import { instantiateTask } from "./fileUtil";
 
 export interface KeyValue {
     key: string;
@@ -25,9 +26,13 @@ export class TaskBase implements Executable {
     protected results: Map<string, any> | undefined;
 
     static async getInstance(stepConfig: Step, taskConfig: TaskConfig) : Promise<Executable>{
-        const  mod = await import(taskConfig.path);
-        const taskCls = mod.default; 
-        return new taskCls(stepConfig, taskConfig);
+        try {
+            const  mod = await instantiateTask(taskConfig.path);
+            return new mod(stepConfig, taskConfig);
+        }catch(e) {
+                throw e;
+            }
+
     }
 
     constructor(protected stepConfig: Step, protected taskConfig: TaskConfig) {
@@ -82,7 +87,7 @@ export class Process implements Executable {
                 
                 
             }catch(e) {
-                console.log(e);
+                this.logger.error("Error Instantiation");
                 throw e
             }
         }

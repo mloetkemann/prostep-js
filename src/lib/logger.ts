@@ -1,6 +1,7 @@
 import log, { Logger as npmLogger} from 'npmlog';
 
 log.enableProgress();
+log.level = 'verbose';
 
 interface LogHandler {
 
@@ -28,7 +29,7 @@ class DefaultLogHandler implements LogHandler {
   }
 
   debug(message: string, ...args: any[]): void {
-    return this.console.debug(this.component, message);
+    return this.verbose(this.component, message);
   }
 
   info(message: string, ...args: any[]) {
