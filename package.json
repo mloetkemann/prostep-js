@@ -8,7 +8,8 @@
   "scripts": {
     "build": "tsc -p .",
     "test": "npx mocha",
-    "lint": "eslint --ext .js,.ts ."
+    "lint": "eslint --ext .js,.ts .",
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
   },
   "devDependencies": {
     "@types/chai": "^4.3.4",
