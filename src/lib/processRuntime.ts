@@ -57,6 +57,7 @@ export class TaskBase implements Executable {
 export class Process implements Executable {
   protected results: Map<string, any> | undefined
   private variables = new Map<string, any>()
+  private constants = new Map<string, any>()
   private steps = Array<Executable>()
   protected logger: Logger
 
@@ -65,6 +66,11 @@ export class Process implements Executable {
     private taskConfig: TaskConfig[]
   ) {
     this.logger = Logger.getLogger(`process:${processConfig.name}`)
+    if (processConfig.constants) {
+      processConfig.constants.forEach(constant => {
+        this.constants.set(constant.key, constant.value)
+      })
+    }
   }
 
   getConfig(): Step {
@@ -136,6 +142,9 @@ export class Process implements Executable {
   async run(context: ExecutableRuntimeContext): Promise<void> {
     this.logger.info(`Run Process`)
     this.mapContext(context.input, this.variables, 'input')
+    if (this.processConfig.constants) {
+      this.mapContext(this.constants, this.variables, 'const')
+    }
 
     for (let i = 0; i < this.steps.length; i++) {
       const step = this.steps[i]

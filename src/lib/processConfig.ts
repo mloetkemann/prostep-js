@@ -22,6 +22,7 @@ export interface Step {
 
 export interface ProcessConfig {
   name: string
+  constants?: KeyValueConfig[]
   inputs: string[]
   steps: Step[]
   results: KeyValueConfig[]
