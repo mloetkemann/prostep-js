@@ -17,7 +17,7 @@ export default class ProStepJS {
     }
 
     public async loadConfigFromFile(filePath: string) {
-
+        throw Error('Not implemented yet');
     }
 
     public async loadConfig(processConfig: ProcessConfig, taskConfig: TaskConfig[]) {

@@ -26,12 +26,9 @@ export class TaskBase implements Executable {
     protected results: Map<string, any> | undefined;
 
     static async getInstance(stepConfig: Step, taskConfig: TaskConfig) : Promise<Executable>{
-        try {
-            const  mod = await instantiateTask(taskConfig.path);
-            return new mod(stepConfig, taskConfig);
-        }catch(e) {
-                throw e;
-            }
+
+        const  mod = await instantiateTask(taskConfig.path);
+        return new mod(stepConfig, taskConfig);
 
     }
 
@@ -113,8 +110,8 @@ export class Process implements Executable {
     }
 
     private mapContext(from: Map<string, any>, to: Map<string, any>, prefix: string) {
-        let value = from.forEach((value, key, map) => {
-            let newKey = `${prefix}:${key}`;
+        const value = from.forEach((value, key, map) => {
+            const newKey = `${prefix}:${key}`;
             to.set(newKey, value);
         });
     }
@@ -142,7 +139,7 @@ export class Process implements Executable {
         this.mapContext(context.input, this.variables, 'input');
         
         for(let i = 0; i < this.steps.length; i++) {
-            let step = this.steps[i];
+            const step = this.steps[i];
             const stepContext = {
                 input: new Map<string, any>(),
                 result: new Map<string, any>(),
