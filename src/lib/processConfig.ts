@@ -1,29 +1,28 @@
-
 export interface KeyValueConfig {
-    key: string;
-    value: any;
+  key: string
+  value: any
 }
 
 export interface TaskConfig {
-    name: string;
-    path: string;
+  name: string
+  path: string
 }
 
 export enum StepType {
-    Task,
-    Subprocess
+  Task,
+  Subprocess,
 }
 
 export interface Step {
-    stepName: string;
-    name: string;
-    type: StepType;
-    arguments: KeyValueConfig[]
+  stepName: string
+  name: string
+  type: StepType
+  arguments: KeyValueConfig[]
 }
 
 export interface ProcessConfig {
-    name: string;
-    inputs: string[];
-    steps: Step[];
-    results: KeyValueConfig[];
+  name: string
+  inputs: string[]
+  steps: Step[]
+  results: KeyValueConfig[]
 }
