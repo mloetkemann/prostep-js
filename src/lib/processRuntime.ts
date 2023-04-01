@@ -77,6 +77,21 @@ export class TaskBase implements Executable {
       throw Error('Wrong amount of fields')
     }
   }
+
+  protected mapInputOption(key: string, value: string): unknown {
+    const field = this.getInputMetadata().fields.find(
+      field => field.name === key
+    )
+    if (field) {
+      if (field.options) {
+        return field.options.get(value)
+      } else {
+        throw Error('Field has no options')
+      }
+    } else {
+      throw Error('Field not found')
+    }
+  }
 }
 
 export class Process implements Executable {
