@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/mloetkemann/prostep-js/compare/v1.1.0...v1.1.1) (2023-04-01)
+
+
+### Bug Fixes
+
+* mapInputOption for option list ([3bbd2c0](https://github.com/mloetkemann/prostep-js/commit/3bbd2c0e8f6c86cc5c90b4a07a37da0ec435d75d))
+
 # [1.1.0](https://github.com/mloetkemann/prostep-js/compare/v1.0.0...v1.1.0) (2023-04-01)
 
 
