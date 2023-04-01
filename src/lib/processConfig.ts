@@ -3,6 +3,16 @@ export interface KeyValueConfig {
   value: any
 }
 
+export interface FieldMetaData {
+  name: string
+  type: string
+  options?: Map<string, unknown>
+}
+
+export interface InputMetadata {
+  fields: FieldMetaData[]
+}
+
 export interface TaskConfig {
   name: string
   path: string
@@ -23,7 +33,7 @@ export interface Step {
 export interface ProcessConfig {
   name: string
   constants?: KeyValueConfig[]
-  inputs: string[]
+  inputs: InputMetadata
   steps: Step[]
   results: KeyValueConfig[]
 }

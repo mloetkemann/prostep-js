@@ -1,7 +1,6 @@
 import { assert } from 'chai'
 import ProStepJS from '..'
-import { StepType, TaskConfig } from '../lib/processConfig'
-import { KeyValue, Process, TaskBase } from '../lib/processRuntime'
+import { StepType } from '../lib/processConfig'
 
 describe('ProStepJS Test', () => {
   const taskConfig = {
@@ -12,7 +11,12 @@ describe('ProStepJS Test', () => {
   it('Run Process', async () => {
     const processConfig = {
       name: 'CalcProcessTest1',
-      inputs: ['a', 'b'],
+      inputs: {
+        fields: [
+          { name: 'a', type: 'number' },
+          { name: 'b', type: 'number' },
+        ],
+      },
       steps: [
         {
           stepName: 'Add',

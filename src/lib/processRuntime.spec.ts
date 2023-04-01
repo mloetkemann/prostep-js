@@ -1,6 +1,6 @@
 import { assert } from 'chai'
-import { StepType, TaskConfig } from './processConfig'
-import { KeyValue, Process, TaskBase } from './processRuntime'
+import { StepType } from './processConfig'
+import { Process, TaskBase } from './processRuntime'
 
 describe('Process Runtime Tests', () => {
   const taskConfig = {
@@ -22,8 +22,8 @@ describe('Process Runtime Tests', () => {
 
     const task = await TaskBase.getInstance(step, taskConfig)
     const stepContext = {
-      input: new Map<string, any>(args),
-      result: new Map<string, any>(),
+      input: new Map<string, unknown>(args),
+      result: new Map<string, unknown>(),
     }
     await task.run(stepContext)
 
@@ -33,7 +33,12 @@ describe('Process Runtime Tests', () => {
   it('Run Process', async () => {
     const processConfig = {
       name: 'CalcProcessTest1',
-      inputs: ['a', 'b'],
+      inputs: {
+        fields: [
+          { name: 'a', type: 'number' },
+          { name: 'b', type: 'number' },
+        ],
+      },
       steps: [
         {
           stepName: 'Add',
@@ -62,11 +67,11 @@ describe('Process Runtime Tests', () => {
     const process = new Process(processConfig, [taskConfig])
     await process.init()
     const processContext = {
-      input: new Map<string, any>([
+      input: new Map<string, unknown>([
         ['a', 2],
         ['b', 3],
       ]),
-      result: new Map<string, any>(),
+      result: new Map<string, unknown>(),
     }
     await process.run(processContext)
     assert.equal(processContext.result.get('result'), 5)
@@ -75,7 +80,13 @@ describe('Process Runtime Tests', () => {
   it('Run Process with 2 Tasks', async () => {
     const processConfig = {
       name: 'CalcProcessTest2',
-      inputs: ['a', 'b', 'c'],
+      inputs: {
+        fields: [
+          { name: 'a', type: 'number' },
+          { name: 'b', type: 'number' },
+          { name: 'c', type: 'number' },
+        ],
+      },
       steps: [
         {
           stepName: 'Add',
@@ -119,12 +130,12 @@ describe('Process Runtime Tests', () => {
     const process = new Process(processConfig, [taskConfig])
     await process.init()
     const processContext = {
-      input: new Map<string, any>([
+      input: new Map<string, unknown>([
         ['a', 2],
         ['b', 3],
         ['c', 4],
       ]),
-      result: new Map<string, any>(),
+      result: new Map<string, unknown>(),
     }
     await process.run(processContext)
     assert.equal(processContext.result.get('result'), 9)
@@ -133,7 +144,12 @@ describe('Process Runtime Tests', () => {
   it('Run Process with 2 Tasks and constants', async () => {
     const processConfig = {
       name: 'CalcProcessTest2Constant',
-      inputs: ['a', 'c'],
+      inputs: {
+        fields: [
+          { name: 'a', type: 'number' },
+          { name: 'c', type: 'number' },
+        ],
+      },
       constants: [
         {
           key: 'valb',
@@ -183,11 +199,11 @@ describe('Process Runtime Tests', () => {
     const process = new Process(processConfig, [taskConfig])
     await process.init()
     const processContext = {
-      input: new Map<string, any>([
+      input: new Map<string, unknown>([
         ['a', 2],
         ['c', 4],
       ]),
-      result: new Map<string, any>(),
+      result: new Map<string, unknown>(),
     }
     await process.run(processContext)
     assert.equal(processContext.result.get('result'), 11)
