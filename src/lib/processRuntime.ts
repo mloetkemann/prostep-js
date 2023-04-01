@@ -1,5 +1,11 @@
 import Logger from './logger'
-import { ProcessConfig, Step, TaskConfig, StepType } from './processConfig'
+import {
+  ProcessConfig,
+  Step,
+  TaskConfig,
+  StepType,
+  InputMetadata,
+} from './processConfig'
 import { instantiateTask } from './fileUtil'
 
 export interface Executable {
@@ -8,6 +14,7 @@ export interface Executable {
   getName(): string
   getConfig(): Step
   run(context: ExecutableRuntimeContext): Promise<void>
+  getInputMetadata(): InputMetadata
 }
 
 export interface ExecutableRuntimeContext {
@@ -30,6 +37,9 @@ export class TaskBase implements Executable {
   constructor(protected stepConfig: Step, protected taskConfig: TaskConfig) {
     this.logger = Logger.getLogger(`task:${stepConfig.stepName}`)
   }
+  getInputMetadata(): InputMetadata {
+    throw new Error('Method not implemented.')
+  }
   getConfig(): Step {
     return this.stepConfig
   }
@@ -44,9 +54,28 @@ export class TaskBase implements Executable {
   getName(): string {
     return this.stepConfig.name
   }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async run(context: ExecutableRuntimeContext): Promise<void> {
+  protected executeTask(context: ExecutableRuntimeContext): Promise<void> {
     throw new Error('Method not implemented.')
+  }
+
+  async run(context: ExecutableRuntimeContext): Promise<void> {
+    this.validateInput(context)
+    await this.executeTask(context)
+  }
+
+  validateInput(context: ExecutableRuntimeContext): void {
+    const fields = this.getInputMetadata().fields
+    fields.forEach(field => {
+      if (typeof context.input.get(field.name) !== field.type) {
+        throw Error('Wrong Type')
+      }
+    })
+
+    if (fields.length != context.input.size) {
+      throw Error('Wrong amount of fields')
+    }
   }
 }
 
@@ -67,6 +96,9 @@ export class Process implements Executable {
         this.constants.set(constant.key, constant.value)
       })
     }
+  }
+  getInputMetadata(): InputMetadata {
+    return this.processConfig.inputs
   }
 
   getConfig(): Step {
@@ -159,8 +191,30 @@ export class Process implements Executable {
     this.mapContext(stepContext.result, this.variables, stepConfig.stepName)
   }
 
+  validateInput(context: ExecutableRuntimeContext): void {
+    const fields = this.getInputMetadata().fields
+    fields.forEach(field => {
+      if (typeof context.input.get(field.name) !== field.type) {
+        throw Error('Wrong Type')
+      }
+    })
+
+    if (fields.length != context.input.size) {
+      throw Error('Wrong amount of fields')
+    }
+  }
+
   async run(context: ExecutableRuntimeContext): Promise<void> {
     this.logger.info(`Run Process`)
+    this.logger.info('Validate Input')
+    try {
+      this.validateInput(context)
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        this.logger.error(err.message)
+        throw err
+      }
+    }
     this.mapContext(context.input, this.variables, 'input')
     if (this.processConfig.constants) {
       this.mapContext(this.constants, this.variables, 'const')
@@ -179,3 +233,4 @@ export class Process implements Executable {
     this.logger.info(`Finish Process`)
   }
 }
+export { InputMetadata }

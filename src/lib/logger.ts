@@ -1,6 +1,5 @@
 import log, { Logger as npmLogger } from 'npmlog'
 
-log.enableProgress()
 log.level = 'verbose'
 
 interface LogHandler {

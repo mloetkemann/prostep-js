@@ -11,7 +11,12 @@ describe('ProStepJS Test', () => {
   it('Run Process', async () => {
     const processConfig = {
       name: 'CalcProcessTest1',
-      inputs: ['a', 'b'],
+      inputs: {
+        fields: [
+          { name: 'a', type: 'number' },
+          { name: 'b', type: 'number' },
+        ],
+      },
       steps: [
         {
           stepName: 'Add',

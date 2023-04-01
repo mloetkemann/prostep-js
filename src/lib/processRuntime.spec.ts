@@ -33,7 +33,12 @@ describe('Process Runtime Tests', () => {
   it('Run Process', async () => {
     const processConfig = {
       name: 'CalcProcessTest1',
-      inputs: ['a', 'b'],
+      inputs: {
+        fields: [
+          { name: 'a', type: 'number' },
+          { name: 'b', type: 'number' },
+        ],
+      },
       steps: [
         {
           stepName: 'Add',
@@ -75,7 +80,13 @@ describe('Process Runtime Tests', () => {
   it('Run Process with 2 Tasks', async () => {
     const processConfig = {
       name: 'CalcProcessTest2',
-      inputs: ['a', 'b', 'c'],
+      inputs: {
+        fields: [
+          { name: 'a', type: 'number' },
+          { name: 'b', type: 'number' },
+          { name: 'c', type: 'number' },
+        ],
+      },
       steps: [
         {
           stepName: 'Add',
@@ -133,7 +144,12 @@ describe('Process Runtime Tests', () => {
   it('Run Process with 2 Tasks and constants', async () => {
     const processConfig = {
       name: 'CalcProcessTest2Constant',
-      inputs: ['a', 'c'],
+      inputs: {
+        fields: [
+          { name: 'a', type: 'number' },
+          { name: 'c', type: 'number' },
+        ],
+      },
       constants: [
         {
           key: 'valb',
