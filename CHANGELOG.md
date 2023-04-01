@@ -1,3 +1,11 @@
+# [1.1.0](https://github.com/mloetkemann/prostep-js/compare/v1.0.0...v1.1.0) (2023-04-01)
+
+
+### Features
+
+* input validation ([cef3bef](https://github.com/mloetkemann/prostep-js/commit/cef3beff38c7415c0cad817074b278a3653e03e1))
+* input validation ([6af7dcc](https://github.com/mloetkemann/prostep-js/commit/6af7dcc2e3009149884fb6950e08a72496546a6c))
+
 # 1.0.0 (2023-04-01)
 
 
