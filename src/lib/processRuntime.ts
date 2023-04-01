@@ -2,27 +2,22 @@ import Logger from './logger'
 import { ProcessConfig, Step, TaskConfig, StepType } from './processConfig'
 import { instantiateTask } from './fileUtil'
 
-export interface KeyValue {
-  key: string
-  value: any
-}
-
 export interface Executable {
   init(): Promise<void>
-  getResults(): Map<string, any> | undefined
+  getResults(): Map<string, unknown> | undefined
   getName(): string
   getConfig(): Step
   run(context: ExecutableRuntimeContext): Promise<void>
 }
 
 export interface ExecutableRuntimeContext {
-  input: Map<string, any>
-  result: Map<string, any>
+  input: Map<string, unknown>
+  result: Map<string, unknown>
 }
 
 export class TaskBase implements Executable {
   protected logger: Logger
-  protected results: Map<string, any> | undefined
+  protected results: Map<string, unknown> | undefined
 
   static async getInstance(
     stepConfig: Step,
@@ -43,21 +38,22 @@ export class TaskBase implements Executable {
     throw new Error('Method not implemented.')
   }
 
-  getResults(): Map<string, any> | undefined {
+  getResults(): Map<string, unknown> | undefined {
     return this.results
   }
   getName(): string {
     return this.stepConfig.name
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async run(context: ExecutableRuntimeContext): Promise<void> {
     throw new Error('Method not implemented.')
   }
 }
 
 export class Process implements Executable {
-  protected results: Map<string, any> | undefined
-  private variables = new Map<string, any>()
-  private constants = new Map<string, any>()
+  protected results: Map<string, unknown> | undefined
+  private variables = new Map<string, unknown>()
+  private constants = new Map<string, unknown>()
   private steps = Array<Executable>()
   protected logger: Logger
 
@@ -77,18 +73,24 @@ export class Process implements Executable {
     throw new Error('Method not implemented.')
   }
 
+  private async initTask(step: Step): Promise<Executable> {
+    try {
+      const config = this.taskConfig.find(item => item.name === step.name)
+      if (config) {
+        return TaskBase.getInstance(step, config)
+      } else {
+        throw Error('Could not find Task Config for instantiation')
+      }
+    } catch (e) {
+      this.logger.error('Error Instantiation')
+      throw e
+    }
+  }
+
   private async instantiateStep(step: Step): Promise<Executable> {
     this.logger.info(`Init Step ${step.stepName}`)
     if (step.type === StepType.Task) {
-      try {
-        const config = this.taskConfig.find(item => item.name === step.name)
-        if (config) {
-          return TaskBase.getInstance(step, config)
-        }
-      } catch (e) {
-        this.logger.error('Error Instantiation')
-        throw e
-      }
+      return this.initTask(step)
     }
     throw Error(`Task Definition of ${step.name} not found`)
   }
@@ -103,7 +105,7 @@ export class Process implements Executable {
     )
   }
 
-  getResults(): Map<string, any> | undefined {
+  getResults(): Map<string, unknown> | undefined {
     return this.results
   }
 
@@ -112,17 +114,17 @@ export class Process implements Executable {
   }
 
   private mapContext(
-    from: Map<string, any>,
-    to: Map<string, any>,
+    from: Map<string, unknown>,
+    to: Map<string, unknown>,
     prefix: string
   ) {
-    const value = from.forEach((value, key, map) => {
+    from.forEach((value, key) => {
       const newKey = `${prefix}:${key}`
       to.set(newKey, value)
     })
   }
 
-  private replaceParameter(value: string): any {
+  private replaceParameter(value: string): unknown {
     const re = /\$\{([a-z0-9]*:[a-z0-9]*)\}/i // RegExp for ${input:a)}
     const match = value.match(re)
     if (match) {
@@ -132,11 +134,29 @@ export class Process implements Executable {
     return value
   }
 
-  private getArgumentValue(value: any): any {
+  private getArgumentValue(value: unknown): unknown {
     if (typeof value === 'string') {
       return this.replaceParameter(value.toString())
     }
     return value
+  }
+
+  async runSingleStep(step: Executable) {
+    const stepContext = {
+      input: new Map<string, unknown>(),
+      result: new Map<string, unknown>(),
+    }
+
+    const stepConfig = step.getConfig()
+    stepConfig.arguments.forEach(args => {
+      stepContext.input.set(args.key, this.getArgumentValue(args.value))
+    })
+
+    this.logger.info(`Start Step: ${stepConfig.stepName}`)
+    await step.run(stepContext)
+    this.logger.info(`Finish Step: ${stepConfig.stepName}`)
+
+    this.mapContext(stepContext.result, this.variables, stepConfig.stepName)
   }
 
   async run(context: ExecutableRuntimeContext): Promise<void> {
@@ -146,31 +166,16 @@ export class Process implements Executable {
       this.mapContext(this.constants, this.variables, 'const')
     }
 
-    for (let i = 0; i < this.steps.length; i++) {
-      const step = this.steps[i]
-      const stepContext = {
-        input: new Map<string, any>(),
-        result: new Map<string, any>(),
-      }
-
-      const stepConfig = step.getConfig()
-      stepConfig.arguments.forEach(args => {
-        stepContext.input.set(args.key, this.getArgumentValue(args.value))
-      })
-
-      this.logger.info(`Start Step ${i}: ${stepConfig.stepName}`)
-      await step.run(stepContext)
-      this.logger.info(`Finish Step ${i}: ${stepConfig.stepName}`)
-
-      this.mapContext(stepContext.result, this.variables, stepConfig.stepName)
-      this.processConfig.results.forEach(resultConfig => {
-        context.result.set(
-          resultConfig.key,
-          this.getArgumentValue(resultConfig.value)
-        )
-      })
-      this.results = context.result
-      this.logger.info(`Finish Process`)
+    for (const step of this.steps) {
+      await this.runSingleStep(step)
     }
+    this.processConfig.results.forEach(resultConfig => {
+      context.result.set(
+        resultConfig.key,
+        this.getArgumentValue(resultConfig.value)
+      )
+    })
+    this.results = context.result
+    this.logger.info(`Finish Process`)
   }
 }

@@ -1,7 +1,6 @@
 import { assert } from 'chai'
 import ProStepJS from '..'
-import { StepType, TaskConfig } from '../lib/processConfig'
-import { KeyValue, Process, TaskBase } from '../lib/processRuntime'
+import { StepType } from '../lib/processConfig'
 
 describe('ProStepJS Test', () => {
   const taskConfig = {

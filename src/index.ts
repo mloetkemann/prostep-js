@@ -25,12 +25,13 @@ export default class ProStepJS {
     await this.process.init()
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async run(args: object): Promise<any> {
     if (this.process) {
       const keyValue = Object.entries(args)
       const context = {
-        input: new Map<string, any>(keyValue),
-        result: new Map<string, any>(),
+        input: new Map<string, unknown>(keyValue),
+        result: new Map<string, unknown>(),
       }
       await this.process.run(context)
       const result = Object.fromEntries(context.result)
