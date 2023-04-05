@@ -6,105 +6,20 @@ import {
   StepType,
   InputMetadata,
 } from './processConfig'
-import { instantiateTask } from './fileUtil'
+import { Executable, ExecutableBase, ExecutableRuntimeContext } from './base'
+import { TaskBase } from './task'
 
-export interface Executable {
-  init(): Promise<void>
-  getResults(): Map<string, unknown> | undefined
-  getName(): string
-  getConfig(): Step
-  run(context: ExecutableRuntimeContext): Promise<void>
-  getInputMetadata(): InputMetadata
-}
-
-export interface ExecutableRuntimeContext {
-  input: Map<string, unknown>
-  result: Map<string, unknown>
-}
-
-export class TaskBase implements Executable {
-  protected logger: Logger
-  protected results: Map<string, unknown> | undefined
-
-  static async getInstance(
-    stepConfig: Step,
-    taskConfig: TaskConfig
-  ): Promise<Executable> {
-    const mod = await instantiateTask(taskConfig.path)
-    return new mod(stepConfig, taskConfig)
-  }
-
-  constructor(protected stepConfig: Step, protected taskConfig: TaskConfig) {
-    this.logger = Logger.getLogger(`task:${stepConfig.stepName}`)
-  }
-  getInputMetadata(): InputMetadata {
-    throw new Error('Method not implemented.')
-  }
-  getConfig(): Step {
-    return this.stepConfig
-  }
-
-  init(): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-
-  getResults(): Map<string, unknown> | undefined {
-    return this.results
-  }
-  getName(): string {
-    return this.stepConfig.name
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected executeTask(context: ExecutableRuntimeContext): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-
-  async run(context: ExecutableRuntimeContext): Promise<void> {
-    this.validateInput(context)
-    await this.executeTask(context)
-  }
-
-  validateInput(context: ExecutableRuntimeContext): void {
-    const fields = this.getInputMetadata().fields
-    fields.forEach(field => {
-      if (typeof context.input.get(field.name) !== field.type) {
-        throw Error('Wrong Type')
-      }
-    })
-
-    if (fields.length != context.input.size) {
-      throw Error('Wrong amount of fields')
-    }
-  }
-
-  protected mapInputOption(key: string, value: string): unknown {
-    const field = this.getInputMetadata().fields.find(
-      field => field.name === key
-    )
-    if (field) {
-      if (field.options) {
-        return field.options.get(value)
-      } else {
-        throw Error('Field has no options')
-      }
-    } else {
-      throw Error('Field not found')
-    }
-  }
-}
-
-export class Process implements Executable {
+export class Process extends ExecutableBase {
   protected results: Map<string, unknown> | undefined
   private variables = new Map<string, unknown>()
   private constants = new Map<string, unknown>()
   private steps = Array<Executable>()
-  protected logger: Logger
 
   constructor(
     private processConfig: ProcessConfig,
     private taskConfig: TaskConfig[]
   ) {
+    super()
     this.logger = Logger.getLogger(`process:${processConfig.name}`)
     if (processConfig.constants) {
       processConfig.constants.forEach(constant => {
@@ -112,6 +27,7 @@ export class Process implements Executable {
       })
     }
   }
+
   getInputMetadata(): InputMetadata {
     return this.processConfig.inputs
   }
@@ -206,19 +122,6 @@ export class Process implements Executable {
     this.mapContext(stepContext.result, this.variables, stepConfig.stepName)
   }
 
-  validateInput(context: ExecutableRuntimeContext): void {
-    const fields = this.getInputMetadata().fields
-    fields.forEach(field => {
-      if (typeof context.input.get(field.name) !== field.type) {
-        throw Error('Wrong Type')
-      }
-    })
-
-    if (fields.length != context.input.size) {
-      throw Error('Wrong amount of fields')
-    }
-  }
-
   async run(context: ExecutableRuntimeContext): Promise<void> {
     this.logger.info(`Run Process`)
     this.logger.info('Validate Input')
@@ -248,4 +151,4 @@ export class Process implements Executable {
     this.logger.info(`Finish Process`)
   }
 }
-export { InputMetadata }
+export { InputMetadata, TaskBase }
