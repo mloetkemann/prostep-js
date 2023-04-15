@@ -27,6 +27,10 @@ export default class EventEmit {
     this.registerEvent('__log') // Log Event which is triggered if any other event is triggerd
   }
 
+  public registerEvents(events: Array<string>) {
+    events.forEach(event => this.registerEvent(event))
+  }
+
   public registerEvent(event: string) {
     if (!this.events.has(event)) {
       this.events.set(event, new Array<EventListenerFunc>())

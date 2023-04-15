@@ -13,10 +13,12 @@ export default class ProStepJS {
   private processInstances = new Map<string, Process>()
 
   private constructor() {
-    EventEmit.getEmitter().registerEvent('callProcess')
-    EventEmit.getEmitter().registerEvent('startProcess')
-    EventEmit.getEmitter().registerEvent('finishProcess')
-    EventEmit.getEmitter().registerEvent('failedProcess')
+    EventEmit.getEmitter().registerEvents([
+      'callProcess',
+      'startProcess',
+      'finishProcess',
+      'failedProcess',
+    ])
     EventEmit.getEmitter().on('callProcess', async param => {
       const processName = param.getString('name')
       const processInput = param.get('input')
