@@ -1,7 +1,6 @@
 import { ProcessConfig, TaskConfig } from './lib/processConfig'
 import { Process } from './lib/processRuntime'
 import Logger from './lib/logger'
-import { dirname } from 'path'
 import * as crypto from 'crypto'
 
 export default class ProStepJS {
@@ -16,6 +15,7 @@ export default class ProStepJS {
     module.paths.forEach(m => this.logger.info(m))
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async loadConfigFromFile(filePath: string) {
     throw Error('Not implemented yet')
   }
@@ -53,6 +53,7 @@ export default class ProStepJS {
     return instanceUUID
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async run(processUUID: string, args: object): Promise<any> {
     const process = this.processInstances.get(processUUID)
     if (process) {
