@@ -1,6 +1,7 @@
 import { assert } from 'chai'
 import ProStepJS from '..'
 import { ProcessConfig, TaskConfig } from '../lib/processConfig'
+import EventEmit from '../lib/util/eventEmit'
 
 const getSampleConfig = function (): [ProcessConfig, TaskConfig[]] {
   const taskConfig = {
@@ -101,5 +102,36 @@ describe('ProStepJS Test', () => {
     const prostepjs = ProStepJS.getProStepJS()
 
     await expectErrorWhileRunning(prostepjs, 'jjj', {})
+  })
+
+  it('Run Process async', done => {
+    const identifier = 'abc'
+    EventEmit.getEmitter().on('finishProcess', param => {
+      const finishIdentifier = param.get('asyncIdentifier')
+      if (
+        finishIdentifier &&
+        typeof finishIdentifier == 'string' &&
+        identifier == finishIdentifier
+      ) {
+        const result = param.getObject('result')
+        if (result) {
+          type ObjectKey = keyof typeof result
+
+          const myVar = 'result' as ObjectKey
+          if (result[myVar] === 7) {
+            done()
+            return
+          }
+        }
+        done(new Error('Wrong result'))
+      }
+    })
+    initSampleProcess().then(() => {
+      EventEmit.getEmitter().trigger('callProcess', {
+        name: 'CalcProcessTest1',
+        input: { a: 5, b: 2 },
+        asyncIdentifier: identifier,
+      })
+    })
   })
 })
