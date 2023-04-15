@@ -1,8 +1,5 @@
-import {
-  ExecutableRuntimeContext,
-  InputMetadata,
-  TaskBase,
-} from './processRuntime'
+import { ExecutableRuntimeContext } from './base'
+import { InputMetadata, TaskBase } from './processRuntime'
 
 function parseToNumber(value: unknown): number | undefined {
   return typeof value === 'number' ? value : undefined
