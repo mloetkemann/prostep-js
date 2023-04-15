@@ -1,11 +1,5 @@
 import Logger from './logger'
-import {
-  ProcessConfig,
-  Step,
-  TaskConfig,
-  StepType,
-  InputMetadata,
-} from './processConfig'
+import { ProcessConfig, Step, TaskConfig, InputMetadata } from './processConfig'
 import { Executable, ExecutableBase, ExecutableRuntimeContext } from './base'
 import { TaskBase } from './task'
 
@@ -52,7 +46,7 @@ export class Process extends ExecutableBase {
 
   private async instantiateStep(step: Step): Promise<Executable> {
     this.logger.info(`Init Step ${step.stepName}`)
-    if (step.type === StepType.Task) {
+    if (step.type === 'Task') {
       return this.initTask(step)
     }
     throw Error(`Task Definition of ${step.name} not found`)

@@ -1,6 +1,6 @@
 import { assert } from 'chai'
 import ProStepJS from '..'
-import { ProcessConfig, StepType, TaskConfig } from '../lib/processConfig'
+import { ProcessConfig, TaskConfig } from '../lib/processConfig'
 
 const getSampleConfig = function (): [ProcessConfig, TaskConfig[]] {
   const taskConfig = {
@@ -20,7 +20,7 @@ const getSampleConfig = function (): [ProcessConfig, TaskConfig[]] {
       {
         stepName: 'Add',
         name: 'add',
-        type: StepType.Task,
+        type: 'Task',
         arguments: [
           {
             key: 'value1',
