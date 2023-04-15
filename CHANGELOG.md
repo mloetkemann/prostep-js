@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/mloetkemann/prostep-js/compare/v1.1.1...v1.2.0) (2023-04-15)
+
+
+### Features
+
+* add multi process support ([641f75f](https://github.com/mloetkemann/prostep-js/commit/641f75ff8ca1f5eec8c564b0ff89cdc63c7f192c))
+
 ## [1.1.1](https://github.com/mloetkemann/prostep-js/compare/v1.1.0...v1.1.1) (2023-04-01)
 
 
