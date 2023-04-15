@@ -1,3 +1,11 @@
+# [1.3.0](https://github.com/mloetkemann/prostep-js/compare/v1.2.0...v1.3.0) (2023-04-15)
+
+
+### Features
+
+* add config file loader ([cb70d5e](https://github.com/mloetkemann/prostep-js/commit/cb70d5e8f4fb667954612edbce6111fdf2a96c94))
+* add configFile parser ([6145d10](https://github.com/mloetkemann/prostep-js/commit/6145d10d3497424e23db545adc95848a781fd408))
+
 # [1.2.0](https://github.com/mloetkemann/prostep-js/compare/v1.1.1...v1.2.0) (2023-04-15)
 
 
