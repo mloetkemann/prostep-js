@@ -10,11 +10,6 @@ export default class ProStepJS {
   private taskConfigurations = new Map<string, TaskConfig>()
   private processInstances = new Map<string, Process>()
 
-  private constructor() {
-    if (require.main) this.logger.info(require.main.filename)
-    module.paths.forEach(m => this.logger.info(m))
-  }
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async loadConfigFromFile(filePath: string) {
     throw Error('Not implemented yet')
