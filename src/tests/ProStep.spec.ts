@@ -43,8 +43,10 @@ describe('ProStepJS Test', () => {
     }
 
     const prostepjs = ProStepJS.getProStepJS()
-    await prostepjs.loadConfig(processConfig, [taskConfig])
-    const result = await prostepjs.run({ a: 5, b: 2 })
+    await prostepjs.loadTaskConfig([taskConfig])
+    await prostepjs.loadProcessConfig(processConfig)
+    const uuid = await prostepjs.initProcess('CalcProcessTest1')
+    const result = await prostepjs.run(uuid, { a: 5, b: 2 })
     assert.equal(result.result, 7)
   })
 })
