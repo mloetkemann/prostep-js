@@ -16,6 +16,7 @@ export default class ProStepJS {
     EventEmit.getEmitter().registerEvent('callProcess')
     EventEmit.getEmitter().registerEvent('startProcess')
     EventEmit.getEmitter().registerEvent('finishProcess')
+    EventEmit.getEmitter().registerEvent('failedProcess')
     EventEmit.getEmitter().on('callProcess', async param => {
       const processName = param.getString('name')
       const processInput = param.get('input')
@@ -73,22 +74,37 @@ export default class ProStepJS {
     return instanceUUID
   }
 
+  private triggerEvent(event: string, param: object) {
+    EventEmit.getEmitter().trigger(event, param)
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async run(processUUID: string, args: object): Promise<any> {
     const process = this.processInstances.get(processUUID)
     if (process) {
-      EventEmit.getEmitter().trigger('startProcess', {
+      this.triggerEvent('startProcess', {
         uuid: processUUID,
         asyncIdentifier: process.getAsyncIdentifier(),
       })
-      const result = await this.runProcess(process, args)
-      EventEmit.getEmitter().trigger('finishProcess', {
-        uuid: processUUID,
-        asyncIdentifier: process.getAsyncIdentifier(),
-        result: result,
-      })
-      return result
+
+      try {
+        const result = await this.runProcess(process, args)
+
+        this.triggerEvent('finishProcess', {
+          uuid: processUUID,
+          asyncIdentifier: process.getAsyncIdentifier(),
+          result: result,
+        })
+        return result
+      } catch (e) {
+        this.triggerEvent('failedProcess', {
+          uuid: processUUID,
+          asyncIdentifier: process.getAsyncIdentifier(),
+        })
+        throw e
+      }
     }
+
     throw Error(`Could not find process with UUID ${processUUID}`)
   }
 
