@@ -1,4 +1,4 @@
-import { assert, expect } from 'chai'
+import { assert } from 'chai'
 import { TaskBase } from './task'
 import { StepType } from './processConfig'
 
