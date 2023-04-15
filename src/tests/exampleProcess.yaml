@@ -1,22 +1,24 @@
 process:
-  Calculator:
+  - name: CalcProcessTest1
     inputs:
-      - a
-      - b
-      - c
+      fields:
+        - name: a
+          type: number
+        - name: b
+          type: number
     steps:
-      firstSum:
-        type: 'Task'
-        name: 'Add'
+      - stepName: Add
+        name: add
+        type: Task
         arguments:
-          value1: '${input:a}'
-          value2: '${input:b}'
-      secondSum:
-        type: 'Task'
-        name: 'Add'
-        arguments: 
-          value1: '${firstSum:result}'
-          value2: '${input:c}'
+          - key: value1
+            value: '${input:a}'
+          - key: value2
+            value: '${input:b}'
     results:
-      result: ${secondSum:result}'
-    
+      - key: result
+        value: ${Add:result}
+
+task:
+  - name: add
+    path: './exampleTask'
