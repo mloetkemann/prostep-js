@@ -1,7 +1,7 @@
 {
   "process": [
     {
-      "name": "CalcProcessTest1",
+      "name": "CalcProcessTest2",
       "inputs": {
         "fields": [
           { "name": "a", "type": "number" },

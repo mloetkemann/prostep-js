@@ -73,6 +73,24 @@ describe('ProStepJS Test', () => {
     assert.equal(result.result, 7)
   })
 
+  it('Run Process with config file', async () => {
+    const prostepjs = ProStepJS.getProStepJS()
+    await prostepjs.loadConfigFromFile('src/tests/exampleProcess.yaml')
+    const uuid = await prostepjs.initProcess('CalcProcessTest2')
+    const result = await prostepjs.run(uuid, { a: 5, b: 2 })
+    assert.equal(result.result, 7)
+  })
+
+  it('Run Process with wrong config file', async () => {
+    const prostepjs = ProStepJS.getProStepJS()
+    try {
+      await prostepjs.loadConfigFromFile('src/tests/tasks.yaml')
+      assert.fail('Error expected')
+    } catch (e) {
+      /* empty */
+    }
+  })
+
   it('Test run with wrong argument', async () => {
     const prostepjs = await initSampleProcess()
     const uuid = await prostepjs.initProcess('CalcProcessTest1')

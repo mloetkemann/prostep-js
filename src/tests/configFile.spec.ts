@@ -9,7 +9,7 @@ const getSampleConfig = function (): [ProcessConfig, TaskConfig[]] {
   }
 
   const processConfig = {
-    name: 'CalcProcessTest1',
+    name: 'CalcProcessTest2',
     inputs: {
       fields: [
         { name: 'a', type: 'number' },
@@ -45,7 +45,7 @@ const getSampleConfig = function (): [ProcessConfig, TaskConfig[]] {
 
 const assertSampleConfig = function (actual: [ProcessConfig[], TaskConfig[]]) {
   const [processConfig, taskConfigs] = getSampleConfig()
-  assert.equal(actual[0][0].name, 'CalcProcessTest1')
+  assert.equal(actual[0][0].name, 'CalcProcessTest2')
   expect(actual[0][0]).to.eql(processConfig)
 
   assert.equal(actual[1][0].name, 'add')
