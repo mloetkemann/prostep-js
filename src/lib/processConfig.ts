@@ -1,5 +1,6 @@
 export interface KeyValueConfig {
   key: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any
 }
 
@@ -18,15 +19,10 @@ export interface TaskConfig {
   path: string
 }
 
-export enum StepType {
-  Task,
-  Subprocess,
-}
-
 export interface Step {
   stepName: string
   name: string
-  type: StepType
+  type: string
   arguments: KeyValueConfig[]
 }
 

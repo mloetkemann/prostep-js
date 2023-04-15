@@ -1,6 +1,5 @@
 import { assert } from 'chai'
 import { TaskBase } from './task'
-import { StepType } from './processConfig'
 
 describe('Process Runtime Tests', () => {
   const taskConfig = {
@@ -16,7 +15,7 @@ describe('Process Runtime Tests', () => {
     const step = {
       stepName: 'Add',
       name: 'Add',
-      type: StepType.Task,
+      type: 'Task',
       arguments: args,
     }
 
@@ -38,7 +37,7 @@ describe('Process Runtime Tests', () => {
     const step = {
       stepName: 'Add',
       name: 'Add',
-      type: StepType.Task,
+      type: 'Task',
       arguments: args,
     }
 

@@ -1,6 +1,6 @@
 import { assert } from 'chai'
 import ProStepJS from '..'
-import { ProcessConfig, StepType, TaskConfig } from '../lib/processConfig'
+import { ProcessConfig, TaskConfig } from '../lib/processConfig'
 
 const getSampleConfig = function (): [ProcessConfig, TaskConfig[]] {
   const taskConfig = {
@@ -20,7 +20,7 @@ const getSampleConfig = function (): [ProcessConfig, TaskConfig[]] {
       {
         stepName: 'Add',
         name: 'add',
-        type: StepType.Task,
+        type: 'Task',
         arguments: [
           {
             key: 'value1',
@@ -71,6 +71,24 @@ describe('ProStepJS Test', () => {
     const uuid = await prostepjs.initProcess('CalcProcessTest1')
     const result = await prostepjs.run(uuid, { a: 5, b: 2 })
     assert.equal(result.result, 7)
+  })
+
+  it('Run Process with config file', async () => {
+    const prostepjs = ProStepJS.getProStepJS()
+    await prostepjs.loadConfigFromFile('src/tests/exampleProcess.yaml')
+    const uuid = await prostepjs.initProcess('CalcProcessTest2')
+    const result = await prostepjs.run(uuid, { a: 5, b: 2 })
+    assert.equal(result.result, 7)
+  })
+
+  it('Run Process with wrong config file', async () => {
+    const prostepjs = ProStepJS.getProStepJS()
+    try {
+      await prostepjs.loadConfigFromFile('src/tests/tasks.yaml')
+      assert.fail('Error expected')
+    } catch (e) {
+      /* empty */
+    }
   })
 
   it('Test run with wrong argument', async () => {

@@ -1,0 +1,42 @@
+{
+  "process": [
+    {
+      "name": "CalcProcessTest2",
+      "inputs": {
+        "fields": [
+          { "name": "a", "type": "number" },
+          { "name": "b", "type": "number" }
+        ]
+      },
+      "steps": [
+        {
+          "stepName": "Add",
+          "name": "add",
+          "type": "Task",
+          "arguments": [
+            {
+              "key": "value1",
+              "value": "${input:a}"
+            },
+            {
+              "key": "value2",
+              "value": "${input:b}"
+            }
+          ]
+        }
+      ],
+      "results": [
+        {
+          "key": "result",
+          "value": "${Add:result}"
+        }
+      ]
+    }
+  ],
+  "task": [
+    {
+      "name": "add",
+      "path": "./exampleTask"
+    }
+  ]
+}

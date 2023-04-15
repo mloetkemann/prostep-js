@@ -1,5 +1,4 @@
 import { assert } from 'chai'
-import { StepType } from './processConfig'
 import { Process } from './processRuntime'
 
 describe('Process Runtime Tests', () => {
@@ -21,7 +20,7 @@ describe('Process Runtime Tests', () => {
         {
           stepName: 'Add',
           name: 'add',
-          type: StepType.Task,
+          type: 'Task',
           arguments: [
             {
               key: 'value1',
@@ -69,7 +68,7 @@ describe('Process Runtime Tests', () => {
         {
           stepName: 'Add',
           name: 'add',
-          type: StepType.Task,
+          type: 'Task',
           arguments: [
             {
               key: 'value1',
@@ -84,7 +83,7 @@ describe('Process Runtime Tests', () => {
         {
           stepName: 'Add2',
           name: 'add',
-          type: StepType.Task,
+          type: 'Task',
           arguments: [
             {
               key: 'value1',
@@ -138,7 +137,7 @@ describe('Process Runtime Tests', () => {
         {
           stepName: 'Add',
           name: 'add',
-          type: StepType.Task,
+          type: 'Task',
           arguments: [
             {
               key: 'value1',
@@ -153,7 +152,7 @@ describe('Process Runtime Tests', () => {
         {
           stepName: 'Add2',
           name: 'add',
-          type: StepType.Task,
+          type: 'Task',
           arguments: [
             {
               key: 'value1',
