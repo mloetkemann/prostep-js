@@ -1,10 +1,5 @@
 type EventListenerFunc = (param: EventParameter) => void
-
-export interface EventParameter {
-  message: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  args: Map<string, unknown>
-}
+export type EventParameter = Map<string, unknown>
 
 export default class EventEmit {
   private events = new Map<string, Array<EventListenerFunc>>()
@@ -17,6 +12,7 @@ export default class EventEmit {
 
   private constructor() {
     this.registerEvent('__all') // Event which is triggered if any other event is triggerd
+    this.registerEvent('__log') // Log Event which is triggered if any other event is triggerd
   }
 
   public registerEvent(event: string) {
@@ -41,21 +37,31 @@ export default class EventEmit {
       parameterEntries = Object.entries(parameter)
     }
 
-    const param = {
-      message: `Event ${event} triggered`,
-      args: new Map<string, unknown>(parameterEntries),
-    }
-    const message = param.args.get('__message')
-    if (message && typeof message == 'string') {
-      param.message = message
-    }
+    const param = new Map<string, unknown>(parameterEntries)
 
-    if (event !== '__all') {
-      this.trigger('__all', param)
+    this.triggerEvent('__all', param)
+
+    await this.triggerEvent(event, param)
+
+    this.addParameter(param, '__message', `Event ${event} triggered`)
+    this.addParameter(param, '__logLevel', `info`)
+
+    this.triggerEvent('__log', param)
+  }
+
+  private addParameter(param: EventParameter, key: string, value: unknown) {
+    const paramValue = param.get(key)
+    if (!paramValue) {
+      param.set(key, value)
     }
+  }
+
+  private async triggerEvent(event: string, param: EventParameter) {
     const eventListener = this.events.get(event)
     if (eventListener) {
       eventListener.forEach(listener => listener(param))
     }
   }
 }
+
+EventEmit.getEmitter()
