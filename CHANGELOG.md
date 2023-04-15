@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/mloetkemann/prostep-js/compare/v1.3.0...v1.4.0) (2023-04-15)
+
+
+### Features
+
+* add EventEmitter ([6f2373f](https://github.com/mloetkemann/prostep-js/commit/6f2373f05b1b744b18e6c890848bb85128b3fe90))
+
 # [1.3.0](https://github.com/mloetkemann/prostep-js/compare/v1.2.0...v1.3.0) (2023-04-15)
 
 
