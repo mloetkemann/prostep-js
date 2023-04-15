@@ -1,12 +1,24 @@
 type EventListenerFunc = (param: EventParameter) => void
-export type EventParameter = Map<string, unknown>
+export class EventParameter extends Map<string, unknown> {
+  getString(key: string): string | undefined {
+    const value = this.get(key)
+    if (value && typeof value == 'string') return value
+    return
+  }
+
+  getObject(key: string): object | undefined {
+    const value = this.get(key)
+    if (value && typeof value == 'object') return value
+    return
+  }
+}
 
 export default class EventEmit {
   private events = new Map<string, Array<EventListenerFunc>>()
   private static inst: EventEmit
 
   public static getEmitter() {
-    EventEmit.inst = new EventEmit()
+    if (!EventEmit.inst) EventEmit.inst = new EventEmit()
     return EventEmit.inst
   }
 
@@ -37,7 +49,7 @@ export default class EventEmit {
       parameterEntries = Object.entries(parameter)
     }
 
-    const param = new Map<string, unknown>(parameterEntries)
+    const param = new EventParameter(parameterEntries)
 
     this.triggerEvent('__all', param)
 

@@ -11,7 +11,8 @@ export class Process extends ExecutableBase {
 
   constructor(
     private processConfig: ProcessConfig,
-    private taskConfig: TaskConfig[]
+    private taskConfig: TaskConfig[],
+    private asyncIdentifier?: string
   ) {
     super()
     this.logger = Logger.getLogger(`process:${processConfig.name}`)
@@ -143,6 +144,10 @@ export class Process extends ExecutableBase {
     })
     this.results = context.result
     this.logger.info(`Finish Process`)
+  }
+
+  public getAsyncIdentifier(): string | undefined {
+    return this.asyncIdentifier
   }
 }
 export { InputMetadata, TaskBase }
