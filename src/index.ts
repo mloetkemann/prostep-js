@@ -3,7 +3,7 @@ import { Process } from './lib/processRuntime'
 import Logger from './lib/logger'
 import * as crypto from 'crypto'
 import ConfigFile from './lib/util/configFile'
-import EventEmit from './lib/util/eventEmit'
+import { EventEmit } from 'alpha8-lib'
 
 export default class ProStepJS {
   private static inst: ProStepJS

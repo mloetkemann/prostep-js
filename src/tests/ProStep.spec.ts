@@ -1,7 +1,7 @@
 import { assert } from 'chai'
 import ProStepJS from '..'
 import { ProcessConfig, TaskConfig } from '../lib/processConfig'
-import EventEmit from '../lib/util/eventEmit'
+import { EventEmit } from 'alpha8-lib'
 
 const getSampleConfig = function (): [ProcessConfig, TaskConfig[]] {
   const taskConfig = {
