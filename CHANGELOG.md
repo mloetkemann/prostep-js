@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/mloetkemann/prostep-js/compare/v1.4.0...v1.4.1) (2023-05-09)
+
+
+### Bug Fixes
+
+* move event emitter to lib project ([17b9729](https://github.com/mloetkemann/prostep-js/commit/17b97290009082234c1d7f8070dcae05a2b5ff13))
+
 # [1.4.0](https://github.com/mloetkemann/prostep-js/compare/v1.3.0...v1.4.0) (2023-04-15)
 
 
