@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/mloetkemann/prostep-js/compare/v1.4.1...v1.4.2) (2023-07-20)
+
+
+### Bug Fixes
+
+* eventEmiter dependency ([#11](https://github.com/mloetkemann/prostep-js/issues/11)) ([f160676](https://github.com/mloetkemann/prostep-js/commit/f160676776be6423c5dcd2c14644ac6784ec87ec))
+
 ## [1.4.1](https://github.com/mloetkemann/prostep-js/compare/v1.4.0...v1.4.1) (2023-05-09)
 
 
