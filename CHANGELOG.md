@@ -1,3 +1,10 @@
+## [1.4.3](https://github.com/mloetkemann/prostep-js/compare/v1.4.2...v1.4.3) (2023-09-26)
+
+
+### Bug Fixes
+
+* build config ([#12](https://github.com/mloetkemann/prostep-js/issues/12)) ([062a500](https://github.com/mloetkemann/prostep-js/commit/062a5000146b37c8e5bc77615fe58a8b03c85c00))
+
 ## [1.4.2](https://github.com/mloetkemann/prostep-js/compare/v1.4.1...v1.4.2) (2023-07-20)
 
 
