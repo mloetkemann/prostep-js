@@ -12,14 +12,13 @@ export default class ProStepJS {
   private taskConfigurations = new Map<string, TaskConfig>()
   private processInstances = new Map<string, Process>()
 
-  private constructor() {
-    EventEmit.getEmitter().registerEvents([
-      'callProcess',
-      'startProcess',
-      'finishProcess',
-      'failedProcess',
-    ])
-    EventEmit.getEmitter().on('callProcess', async param => {
+  private emitter: EventEmit | undefined
+
+  private async init() {
+    this.emitter = await EventEmit.getEmitter()
+    console.log('init)')
+    await this.emitter.registerEvent('callProcess')
+    this.emitter.on('callProcess', async param => {
       const processName = param.getString('name')
       const processInput = param.get('input')
       const asyncIdentifier = param.getString('asyncIdentifier')
@@ -77,7 +76,7 @@ export default class ProStepJS {
   }
 
   private triggerEvent(event: string, param: object) {
-    EventEmit.getEmitter().trigger(event, param)
+    this.emitter?.trigger(event, param)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -127,8 +126,11 @@ export default class ProStepJS {
     return {}
   }
 
-  public static getProStepJS() {
-    if (!ProStepJS.inst) ProStepJS.inst = new ProStepJS()
+  public static async getProStepJS() {
+    if (!ProStepJS.inst) {
+      ProStepJS.inst = new ProStepJS()
+      await ProStepJS.inst.init()
+    }
     return ProStepJS.inst
   }
 }

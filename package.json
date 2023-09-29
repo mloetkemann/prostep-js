@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@types/js-yaml": "^4.0.5",
-    "alpha8-lib": "^1.2.6",
+    "alpha8-lib": "^1.4.1",
     "js-yaml": "^4.1.0",
     "npmlog": "^7.0.1"
   },
@@ -55,5 +55,8 @@
       "@semantic-release/npm",
       "@semantic-release/git"
     ]
+  },
+  "alpha8Config": {
+    "eventDriver": "local"
   }
 }

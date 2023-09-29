@@ -11,7 +11,6 @@ export class TaskBase extends ExecutableBase {
     taskConfig: TaskConfig
   ): Promise<Executable> {
     const mod = await instantiateTask(taskConfig.path)
-    console.log(mod)
     return new mod(stepConfig, taskConfig)
   }
 
