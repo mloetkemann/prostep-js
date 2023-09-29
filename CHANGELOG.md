@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/mloetkemann/prostep-js/compare/v1.4.3...v1.5.0) (2023-09-29)
+
+
+### Features
+
+* add rabbitmq support ([#13](https://github.com/mloetkemann/prostep-js/issues/13)) ([5c4a101](https://github.com/mloetkemann/prostep-js/commit/5c4a101f4812a45db7c88eda71e267ecf88c281e))
+
 ## [1.4.3](https://github.com/mloetkemann/prostep-js/compare/v1.4.2...v1.4.3) (2023-09-26)
 
 
