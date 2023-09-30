@@ -49,14 +49,16 @@ export class ExecutableBase implements Executable {
 
   validateInput(context: ExecutableRuntimeContext): void {
     const fields = this.getInputMetadata().fields
-    fields.forEach(field => {
-      if (typeof context.input.get(field.name) !== field.type) {
-        throw Error('Wrong Type')
-      }
-    })
+    if (fields) {
+      fields.forEach(field => {
+        if (typeof context.input.get(field.name) !== field.type) {
+          throw Error('Wrong Type')
+        }
+      })
 
-    if (fields.length != context.input.size) {
-      throw Error('Wrong amount of fields')
+      if (fields.length != context.input.size) {
+        throw Error('Wrong amount of fields')
+      }
     }
   }
 
