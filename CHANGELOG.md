@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/mloetkemann/prostep-js/compare/v1.5.0...v1.5.1) (2023-09-30)
+
+
+### Bug Fixes
+
+* process without fields ([#14](https://github.com/mloetkemann/prostep-js/issues/14)) ([e91b188](https://github.com/mloetkemann/prostep-js/commit/e91b188f8c571808383c13c9fa7f2ca899ffbce4))
+
 # [1.5.0](https://github.com/mloetkemann/prostep-js/compare/v1.4.3...v1.5.0) (2023-09-29)
 
 
