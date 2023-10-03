@@ -2,12 +2,17 @@ import Logger from './logger'
 import { ProcessConfig, Step, TaskConfig, InputMetadata } from './processConfig'
 import { Executable, ExecutableBase, ExecutableRuntimeContext } from './base'
 import { TaskBase } from './task'
+import * as crypto from 'crypto'
+import EventEmit from 'alpha8-lib/dist/lib/eventEmit'
 
 export class Process extends ExecutableBase {
   protected results: Map<string, unknown> | undefined
   private variables = new Map<string, unknown>()
   private constants = new Map<string, unknown>()
   private steps = Array<Executable>()
+  private processUUID: string
+
+  private emitter: EventEmit | undefined
 
   constructor(
     private processConfig: ProcessConfig,
@@ -16,11 +21,16 @@ export class Process extends ExecutableBase {
   ) {
     super()
     this.logger = Logger.getLogger(`process:${processConfig.name}`)
+    this.processUUID = crypto.randomUUID()
     if (processConfig.constants) {
       processConfig.constants.forEach(constant => {
         this.constants.set(constant.key, constant.value)
       })
     }
+  }
+
+  getProcessUUID(): string {
+    return this.processUUID
   }
 
   getInputMetadata(): InputMetadata {
@@ -46,7 +56,7 @@ export class Process extends ExecutableBase {
   }
 
   private async instantiateStep(step: Step): Promise<Executable> {
-    this.logger.info(`Init Step ${step.stepName}`)
+    this.logger.info(`Initialize Step ${step.stepName}`)
     if (step.type === 'Task') {
       return this.initTask(step)
     }
@@ -54,7 +64,10 @@ export class Process extends ExecutableBase {
   }
 
   async init() {
-    this.logger.info(`Init Process ${this.getName()}`)
+    this.emitter = await EventEmit.getEmitter()
+    this.logger.info(
+      `Initialize process ${this.getName()} (${this.processUUID})`
+    )
     this.steps = await Promise.all(
       this.processConfig.steps.map(async item => {
         const step = await this.instantiateStep(item)
@@ -99,21 +112,43 @@ export class Process extends ExecutableBase {
     return value
   }
 
-  async runSingleStep(step: Executable) {
+  private triggerEvent(
+    event: string,
+    stepConfig: Step,
+    additionalOptions?: object
+  ) {
+    const options = {
+      uuid: this.processUUID,
+      asyncIdentifier: this.asyncIdentifier,
+      stepName: stepConfig.stepName,
+    }
+
+    const mergedOptions = Object.assign(options, additionalOptions)
+    this.logger.info(`Event ${event}: ${stepConfig.stepName}`)
+    this.emitter?.trigger('startStep', mergedOptions)
+  }
+
+  private prepareStepContext(stepConfig: Step): ExecutableRuntimeContext {
     const stepContext = {
       input: new Map<string, unknown>(),
       result: new Map<string, unknown>(),
     }
 
-    const stepConfig = step.getConfig()
     stepConfig.arguments.forEach(args => {
       stepContext.input.set(args.key, this.getArgumentValue(args.value))
     })
 
-    this.logger.info(`Start Step: ${stepConfig.stepName}`)
-    await step.run(stepContext)
-    this.logger.info(`Finish Step: ${stepConfig.stepName}`)
+    return stepContext
+  }
 
+  private async runSingleStep(step: Executable) {
+    const stepConfig = step.getConfig()
+    const stepContext = this.prepareStepContext(stepConfig)
+    this.triggerEvent('startStep', stepConfig)
+
+    await step.run(stepContext)
+
+    this.triggerEvent('finishStep', stepConfig)
     this.mapContext(stepContext.result, this.variables, stepConfig.stepName)
   }
 
@@ -134,7 +169,13 @@ export class Process extends ExecutableBase {
     }
 
     for (const step of this.steps) {
-      await this.runSingleStep(step)
+      try {
+        await this.runSingleStep(step)
+      } catch (err) {
+        this.logger.error(`Task failed!`)
+        this.logger.trace(err)
+        throw err
+      }
     }
     this.processConfig.results.forEach(resultConfig => {
       context.result.set(

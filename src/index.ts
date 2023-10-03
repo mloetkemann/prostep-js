@@ -1,9 +1,9 @@
 import { ProcessConfig, TaskConfig } from './lib/processConfig'
 import { Process } from './lib/processRuntime'
 import Logger from './lib/logger'
-import * as crypto from 'crypto'
 import ConfigFile from './lib/util/configFile'
 import { EventEmit } from 'alpha8-lib'
+import 'dotenv/config'
 
 export default class ProStepJS {
   private static inst: ProStepJS
@@ -59,8 +59,6 @@ export default class ProStepJS {
     name: string,
     asyncIdentifier?: string
   ): Promise<string> {
-    const instanceUUID = crypto.randomUUID()
-
     const processConfig = this.processConfigurations.get(name)
     if (processConfig) {
       const taskConfigs = Array.from(
@@ -69,10 +67,12 @@ export default class ProStepJS {
       )
       const process = new Process(processConfig, taskConfigs, asyncIdentifier)
       await process.init()
+      const instanceUUID = process.getProcessUUID()
       this.processInstances.set(instanceUUID, process)
+      return instanceUUID
+    } else {
+      throw Error(`Process Config ${name} not found`)
     }
-
-    return instanceUUID
   }
 
   private triggerEvent(event: string, param: object) {
