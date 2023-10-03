@@ -12,7 +12,7 @@ async function tryImport(path: string): Promise<any> {
     logger.verbose(`Found ${path}`)
     return taskCls.default
   } catch (e) {
-    console.log(e)
+    logger.verbose(`Path ${path} not found`)
     return
   }
 }
