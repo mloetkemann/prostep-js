@@ -1,6 +1,6 @@
 import log, { Logger as npmLogger } from 'npmlog'
 
-log.level = 'verbose'
+log.level = 'warn'
 
 interface LogHandler {
   debug(message: string, ...args: any[]): void
@@ -14,6 +14,8 @@ interface LogHandler {
   error(message: string, ...args: any[]): void
 
   silly(message: string, ...args: any[]): void
+
+  trace(obj: unknown): void
 }
 
 class DefaultLogHandler implements LogHandler {
@@ -47,6 +49,14 @@ class DefaultLogHandler implements LogHandler {
   silly(message: string, ...args: any[]) {
     return this.console.silly(this.component, message)
   }
+
+  trace(obj: unknown): void {
+    // expect error object
+    if (obj instanceof Error) {
+      this.error(obj.message)
+      if (obj.stack) this.verbose(obj.stack)
+    }
+  }
 }
 
 export default class Logger {
@@ -61,6 +71,10 @@ export default class Logger {
     if (this.logHandlerList.length == 0) {
       this.logHandlerList.push(new DefaultLogHandler(name))
     }
+  }
+
+  static setLogLevel(level: string): void {
+    log.level = level
   }
 
   getName(): string {
@@ -89,6 +103,10 @@ export default class Logger {
 
   silly(message: string, ...args: any[]) {
     this.logHandlerList.forEach(handler => handler.silly(message, args))
+  }
+
+  trace(obj: unknown): void {
+    this.logHandlerList.forEach(handler => handler.trace(obj))
   }
 
   public static getLogger(name: string, logHandlerList?: LogHandler[]) {

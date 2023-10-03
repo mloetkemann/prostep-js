@@ -128,6 +128,7 @@ export default class ProStepJS {
 
   public static async getProStepJS() {
     if (!ProStepJS.inst) {
+      if (process.env.LOG_LEVEL) Logger.setLogLevel(process.env.LOG_LEVEL)
       ProStepJS.inst = new ProStepJS()
       await ProStepJS.inst.init()
     }
