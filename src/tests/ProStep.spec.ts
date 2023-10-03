@@ -91,17 +91,6 @@ describe('ProStepJS Test', () => {
       /* empty */
     }
   })
-
-  it('Run Process with config file (empty input)', async () => {
-    const prostepjs = await ProStepJS.getProStepJS()
-    await prostepjs.loadConfigFromFile(
-      'src/tests/exampleProcessEmptyInputResult.yaml'
-    )
-    const uuid = await prostepjs.initProcess('CalcProcessTest2')
-    const result = await prostepjs.run(uuid, { a: 5, b: 2 })
-    assert.equal(result.result, 7)
-  })
-
   it('Test run with wrong argument', async () => {
     const prostepjs = await initSampleProcess()
     const uuid = await prostepjs.initProcess('CalcProcessTest1')

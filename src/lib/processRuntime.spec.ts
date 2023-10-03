@@ -185,4 +185,66 @@ describe('Process Runtime Tests', () => {
     await process.run(processContext)
     assert.equal(processContext.result.get('result'), 11)
   })
+
+  it('Test task with failure', async () => {
+    const processConfig = {
+      name: 'CalcProcessTest2',
+      inputs: {
+        fields: [
+          { name: 'a', type: 'number' },
+          { name: 'b', type: 'number' },
+        ],
+      },
+      steps: [
+        {
+          stepName: 'Add',
+          name: 'add',
+          type: 'Task',
+          arguments: [
+            {
+              key: 'value1',
+              value: '${input:a}',
+            },
+            {
+              key: 'value2',
+              value: '${input:b}',
+            },
+          ],
+        },
+      ],
+      results: [
+        {
+          key: 'result',
+          value: '${Add:result}',
+        },
+      ],
+    }
+
+    const taskConfig = {
+      name: 'add',
+      path: '../../src/tests/taskToFail.ts',
+    }
+
+    const process = new Process(processConfig, [taskConfig])
+    await process.init()
+
+    const processContext = {
+      input: new Map<string, unknown>([
+        ['a', 2],
+        ['b', 3],
+      ]),
+      result: new Map<string, unknown>(),
+    }
+
+    let noErrorHappened = false
+    try {
+      await process.run(processContext)
+      noErrorHappened = true
+      // eslint-disable-next-line no-empty
+    } catch (err) {}
+
+    if (noErrorHappened) {
+      assert.fail('Process finished. Failure expected')
+    }
+  })
 })
