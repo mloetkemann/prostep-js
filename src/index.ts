@@ -4,6 +4,7 @@ import Logger from './lib/logger'
 import ConfigFile from './lib/util/configFile'
 import { EventEmit } from 'alpha8-lib'
 import 'dotenv/config'
+import ProcessRuntimeContext from './lib/processRuntimeContext'
 
 export default class ProStepJS {
   private static inst: ProStepJS
@@ -113,10 +114,8 @@ export default class ProStepJS {
   private async runProcess(process: Process, args: object): Promise<any> {
     if (process) {
       const keyValue = Object.entries(args)
-      const context = {
-        input: new Map<string, unknown>(keyValue),
-        result: new Map<string, unknown>(),
-      }
+      const context = new ProcessRuntimeContext(keyValue)
+
       await process.run(context)
       const result = Object.fromEntries(context.result)
       return result

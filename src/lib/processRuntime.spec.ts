@@ -1,5 +1,6 @@
 import { assert } from 'chai'
 import { Process } from './processRuntime'
+import ProcessRuntimeContext from './processRuntimeContext'
 
 describe('Process Runtime Tests', () => {
   const taskConfig = {
@@ -43,13 +44,10 @@ describe('Process Runtime Tests', () => {
 
     const process = new Process(processConfig, [taskConfig])
     await process.init()
-    const processContext = {
-      input: new Map<string, unknown>([
-        ['a', 2],
-        ['b', 3],
-      ]),
-      result: new Map<string, unknown>(),
-    }
+    const processContext = new ProcessRuntimeContext()
+    processContext.input.set('a', 2)
+    processContext.input.set('b', 3)
+
     await process.run(processContext)
     assert.equal(processContext.result.get('result'), 5)
   })
@@ -106,14 +104,12 @@ describe('Process Runtime Tests', () => {
 
     const process = new Process(processConfig, [taskConfig])
     await process.init()
-    const processContext = {
-      input: new Map<string, unknown>([
-        ['a', 2],
-        ['b', 3],
-        ['c', 4],
-      ]),
-      result: new Map<string, unknown>(),
-    }
+
+    const processContext = new ProcessRuntimeContext()
+    processContext.input.set('a', 2)
+    processContext.input.set('b', 3)
+    processContext.input.set('c', 4)
+
     await process.run(processContext)
     assert.equal(processContext.result.get('result'), 9)
   })
@@ -175,13 +171,11 @@ describe('Process Runtime Tests', () => {
 
     const process = new Process(processConfig, [taskConfig])
     await process.init()
-    const processContext = {
-      input: new Map<string, unknown>([
-        ['a', 2],
-        ['c', 4],
-      ]),
-      result: new Map<string, unknown>(),
-    }
+
+    const processContext = new ProcessRuntimeContext()
+    processContext.input.set('a', 2)
+    processContext.input.set('c', 4)
+
     await process.run(processContext)
     assert.equal(processContext.result.get('result'), 11)
   })
@@ -228,13 +222,9 @@ describe('Process Runtime Tests', () => {
     const process = new Process(processConfig, [taskConfig])
     await process.init()
 
-    const processContext = {
-      input: new Map<string, unknown>([
-        ['a', 2],
-        ['b', 3],
-      ]),
-      result: new Map<string, unknown>(),
-    }
+    const processContext = new ProcessRuntimeContext()
+    processContext.input.set('a', 2)
+    processContext.input.set('b', 3)
 
     let noErrorHappened = false
     try {

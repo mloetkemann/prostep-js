@@ -4,6 +4,7 @@ import { Executable, ExecutableBase, ExecutableRuntimeContext } from './base'
 import { TaskBase } from './task'
 import * as crypto from 'crypto'
 import EventEmit from 'alpha8-lib/dist/lib/eventEmit'
+import TaskRuntimeContext from './taskRuntimeContext'
 
 export class Process extends ExecutableBase {
   protected results: Map<string, unknown> | undefined
@@ -129,16 +130,17 @@ export class Process extends ExecutableBase {
   }
 
   private prepareStepContext(stepConfig: Step): ExecutableRuntimeContext {
-    const stepContext = {
-      input: new Map<string, unknown>(),
-      result: new Map<string, unknown>(),
-    }
+    const stepContext = new TaskRuntimeContext(this, stepConfig)
 
     stepConfig.arguments.forEach(args => {
       stepContext.input.set(args.key, this.getArgumentValue(args.value))
     })
 
     return stepContext
+  }
+
+  public setTaskProgress(value: number, stepConfig: Step) {
+    this.triggerEvent('taskProgress', stepConfig, { value: value })
   }
 
   private async runSingleStep(step: Executable) {

@@ -1,7 +1,23 @@
 import { assert } from 'chai'
 import { TaskBase } from './task'
+import TaskRuntimeContext from './taskRuntimeContext'
+import { Process } from './processRuntime'
+import { ExecutableRuntimeContextBase } from './base'
 
-describe('Process Runtime Tests', () => {
+class Context extends ExecutableRuntimeContextBase {
+  constructor(
+    input: Map<string, unknown>,
+    result: Map<string, unknown>,
+    private validator: () => void
+  ) {
+    super(input, result)
+  }
+  progress(value: number): void {
+    this.validator()
+  }
+}
+
+describe('Tasks Tests', () => {
   const taskConfig = {
     name: 'add',
     path: './exampleTask',
@@ -20,10 +36,15 @@ describe('Process Runtime Tests', () => {
     }
 
     const task = await TaskBase.getInstance(step, taskConfig)
-    const stepContext = {
-      input: new Map<string, unknown>(args),
-      result: new Map<string, unknown>(),
-    }
+
+    const stepContext = new Context(
+      new Map<string, unknown>(args),
+      new Map<string, unknown>(),
+      () => {
+        console.log('Test')
+      }
+    )
+
     await task.run(stepContext)
 
     assert.equal(stepContext.result.get('result'), 5)
@@ -42,11 +63,11 @@ describe('Process Runtime Tests', () => {
     }
 
     const task = await TaskBase.getInstance(step, taskConfig)
-    const stepContext = {
-      input: new Map<string, unknown>(args),
-      result: new Map<string, unknown>(),
-    }
 
+    const stepContext = new ExecutableRuntimeContextBase(
+      new Map<string, unknown>(args),
+      new Map<string, unknown>()
+    )
     let error = false
     try {
       await task.run(stepContext)

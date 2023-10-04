@@ -16,13 +16,16 @@ export default class ExampleTask extends TaskBase {
   }
 
   async executeTask(context: ExecutableRuntimeContext) {
+    context.progress(0)
     const value1 = parseToNumber(context.input.get('value1'))
     const value2 = parseToNumber(context.input.get('value2'))
 
+    context.progress(0.5)
     if (value1 && value2) {
       const result = value1 + value2
       this.logger.info(`Calculate ${value1} + ${value2} = ${result}`)
       context.result.set('result', result)
     }
+    context.progress(1)
   }
 }

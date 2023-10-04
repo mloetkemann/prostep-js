@@ -13,6 +13,18 @@ export interface Executable {
 export interface ExecutableRuntimeContext {
   input: Map<string, unknown>
   result: Map<string, unknown>
+  progress(value: number): void
+}
+
+export class ExecutableRuntimeContextBase implements ExecutableRuntimeContext {
+  constructor(
+    public input: Map<string, unknown>,
+    public result: Map<string, unknown>
+  ) {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  progress(value: number): void {
+    throw new Error('Method not implemented.')
+  }
 }
 
 export class ExecutableBase implements Executable {
