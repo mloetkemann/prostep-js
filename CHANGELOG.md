@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/mloetkemann/prostep-js/compare/v1.5.1...v1.5.2) (2023-11-25)
+
+
+### Bug Fixes
+
+* improve input validation ([#15](https://github.com/mloetkemann/prostep-js/issues/15)) ([699e42b](https://github.com/mloetkemann/prostep-js/commit/699e42bbc5b1b9094cd6e40434562ce752e1c032))
+
 ## [1.5.1](https://github.com/mloetkemann/prostep-js/compare/v1.5.0...v1.5.1) (2023-09-30)
 
 
