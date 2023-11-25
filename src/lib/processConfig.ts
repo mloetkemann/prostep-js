@@ -8,6 +8,7 @@ export interface FieldMetaData {
   name: string
   type: string
   options?: Map<string, unknown>
+  required?: boolean
 }
 
 export interface InputMetadata {

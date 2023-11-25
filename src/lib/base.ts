@@ -51,14 +51,17 @@ export class ExecutableBase implements Executable {
     const fields = this.getInputMetadata().fields
     if (fields) {
       fields.forEach(field => {
-        if (typeof context.input.get(field.name) !== field.type) {
-          throw Error('Wrong Type')
+        if (field.required) {
+          const current_field = context.input.get(field.name)
+          if (!current_field) {
+            throw Error(`Input field "${field.name}" missing`)
+          }
+
+          if (typeof current_field !== field.type) {
+            throw Error('Wrong Type')
+          }
         }
       })
-
-      if (fields.length != context.input.size) {
-        throw Error('Wrong amount of fields')
-      }
     }
   }
 
