@@ -9,8 +9,9 @@ export default class ExampleTask extends TaskBase {
   getInputMetadata(): InputMetadata {
     return {
       fields: [
-        { name: 'value1', type: 'number' },
-        { name: 'value2', type: 'number' },
+        { name: 'value1', type: 'number', required: true },
+        { name: 'value2', type: 'number', required: true },
+        { name: 'optionalField', type: 'number' },
       ],
     }
   }

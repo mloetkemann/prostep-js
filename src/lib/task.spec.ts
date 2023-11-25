@@ -1,7 +1,7 @@
 import { assert } from 'chai'
 import { TaskBase } from './task'
 
-describe('Process Runtime Tests', () => {
+describe('Task Tests', () => {
   const taskConfig = {
     name: 'add',
     path: './exampleTask',
