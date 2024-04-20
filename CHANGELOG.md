@@ -1,3 +1,10 @@
+## [1.5.3](https://github.com/mloetkemann/prostep-js/compare/v1.5.2...v1.5.3) (2024-04-20)
+
+
+### Bug Fixes
+
+* dev dependencies ([4eeb0a7](https://github.com/mloetkemann/prostep-js/commit/4eeb0a73c7a7a669d0491f193227ab0dd27112b4))
+
 ## [1.5.2](https://github.com/mloetkemann/prostep-js/compare/v1.5.1...v1.5.2) (2023-11-25)
 
 
