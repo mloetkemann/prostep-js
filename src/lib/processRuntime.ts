@@ -1,7 +1,12 @@
-import Logger from './logger'
-import { ProcessConfig, Step, TaskConfig, InputMetadata } from './processConfig'
-import { Executable, ExecutableBase, ExecutableRuntimeContext } from './base'
-import { TaskBase } from './task'
+import Logger from './logger.js'
+import {
+  ProcessConfig,
+  Step,
+  TaskConfig,
+  InputMetadata,
+} from './processConfig.js'
+import { Executable, ExecutableBase, ExecutableRuntimeContext } from './base.js'
+import { TaskBase } from './task.js'
 
 export class Process extends ExecutableBase {
   protected results: Map<string, unknown> | undefined

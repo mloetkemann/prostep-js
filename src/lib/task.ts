@@ -1,7 +1,7 @@
-import Logger from './logger'
-import { Step, TaskConfig } from './processConfig'
-import { instantiateTask } from './fileUtil'
-import { Executable, ExecutableBase } from './base'
+import Logger from './logger.js'
+import { Step, TaskConfig } from './processConfig.js'
+import { instantiateTask } from './fileUtil.js'
+import { Executable, ExecutableBase } from './base.js'
 
 export class TaskBase extends ExecutableBase {
   protected results: Map<string, unknown> | undefined
@@ -10,7 +10,9 @@ export class TaskBase extends ExecutableBase {
     stepConfig: Step,
     taskConfig: TaskConfig
   ): Promise<Executable> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const mod = await instantiateTask(taskConfig.path)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
     return new mod(stepConfig, taskConfig)
   }
 

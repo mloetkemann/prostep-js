@@ -55,14 +55,14 @@ export default class EventEmit {
 
     const param = new EventParameter(parameterEntries)
 
-    this.triggerEvent('__all', param)
+    await this.triggerEvent('__all', param)
 
     await this.triggerEvent(event, param)
 
     this.addParameter(param, '__message', `Event ${event} triggered`)
     this.addParameter(param, '__logLevel', `info`)
 
-    this.triggerEvent('__log', param)
+    await this.triggerEvent('__log', param)
   }
 
   private addParameter(param: EventParameter, key: string, value: unknown) {
@@ -72,6 +72,7 @@ export default class EventEmit {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   private async triggerEvent(event: string, param: EventParameter) {
     const eventListener = this.events.get(event)
     if (eventListener) {

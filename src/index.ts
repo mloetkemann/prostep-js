@@ -1,9 +1,9 @@
-import { ProcessConfig, TaskConfig } from './lib/processConfig'
-import { Process } from './lib/processRuntime'
-import Logger from './lib/logger'
+import { ProcessConfig, TaskConfig } from './lib/processConfig.js'
+import { Process } from './lib/processRuntime.js'
+import Logger from './lib/logger.js'
 import * as crypto from 'crypto'
-import ConfigFile from './lib/util/configFile'
-import { EventEmit } from 'alpha8-lib'
+import ConfigFile from './lib/util/configFile.js'
+import { EventEmit, EventParameter } from 'alpha8-lib'
 
 export default class ProStepJS {
   private static inst: ProStepJS
@@ -14,18 +14,22 @@ export default class ProStepJS {
 
   private emitter: EventEmit | undefined
 
+  private async _callProcess(param: EventParameter): Promise<void> {
+    const processName = param.getString('name')
+    const processInput = param.get('input')
+    const asyncIdentifier = param.getString('asyncIdentifier')
+    if (processName && processInput && typeof processInput == 'object') {
+      const uuid = await this.initProcess(processName, asyncIdentifier)
+      await this.run(uuid, processInput)
+    }
+  }
+
   private async init() {
     this.emitter = await EventEmit.getEmitter()
     console.log('init)')
     await this.emitter.registerEvent('callProcess')
     this.emitter.on('callProcess', async param => {
-      const processName = param.getString('name')
-      const processInput = param.get('input')
-      const asyncIdentifier = param.getString('asyncIdentifier')
-      if (processName && processInput && typeof processInput == 'object') {
-        const uuid = await this.initProcess(processName, asyncIdentifier)
-        await this.run(uuid, processInput)
-      }
+      return this._callProcess(param)
     })
   }
 
@@ -34,12 +38,12 @@ export default class ProStepJS {
     const configFile = new ConfigFile(filePath)
     const [processConfigs, taskConfigs] = await configFile.readConfig()
     this.loadTaskConfig(taskConfigs)
-    processConfigs.forEach(processConfig =>
-      this.loadProcessConfig(processConfig)
+    return Promise.all(
+      processConfigs.map(processConfig => this.loadProcessConfig(processConfig))
     )
   }
 
-  public async loadTaskConfig(taskConfigs: TaskConfig[]) {
+  public loadTaskConfig(taskConfigs: TaskConfig[]) {
     taskConfigs.forEach(taskConfig => {
       if (!this.taskConfigurations.has(taskConfig.name)) {
         this.logger.info(`Task ${taskConfig.name} loaded`)
@@ -48,7 +52,7 @@ export default class ProStepJS {
     })
   }
 
-  public async loadProcessConfig(processConfig: ProcessConfig) {
+  public loadProcessConfig(processConfig: ProcessConfig) {
     if (!this.processConfigurations.has(processConfig.name)) {
       this.logger.info(`Process ${processConfig.name} loaded`)
       this.processConfigurations.set(processConfig.name, processConfig)
@@ -75,30 +79,33 @@ export default class ProStepJS {
     return instanceUUID
   }
 
-  private triggerEvent(event: string, param: object) {
-    this.emitter?.trigger(event, param)
+  private async triggerEvent(event: string, param: object) {
+    await this.emitter?.trigger(event, param)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async run(processUUID: string, args: object): Promise<any> {
     const process = this.processInstances.get(processUUID)
     if (process) {
-      this.triggerEvent('startProcess', {
+      await this.triggerEvent('startProcess', {
         uuid: processUUID,
         asyncIdentifier: process.getAsyncIdentifier(),
       })
 
       try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const result = await this.runProcess(process, args)
 
-        this.triggerEvent('finishProcess', {
+        await this.triggerEvent('finishProcess', {
           uuid: processUUID,
           asyncIdentifier: process.getAsyncIdentifier(),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           result: result,
         })
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return result
       } catch (e) {
-        this.triggerEvent('failedProcess', {
+        await this.triggerEvent('failedProcess', {
           uuid: processUUID,
           asyncIdentifier: process.getAsyncIdentifier(),
         })
@@ -135,7 +142,7 @@ export default class ProStepJS {
   }
 }
 
-export * from './lib/logger'
-export * from './lib/processConfig'
-export * from './lib/processRuntime'
+export * from './lib/logger.js'
+export * from './lib/processConfig.js'
+export * from './lib/processRuntime.js'
 export { EventEmit as ProStepEventEmitter }

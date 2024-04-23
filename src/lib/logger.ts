@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import log, { Logger as npmLogger } from 'npmlog'
 
 log.level = 'verbose'
@@ -25,27 +26,27 @@ class DefaultLogHandler implements LogHandler {
   }
 
   debug(message: string, ...args: any[]): void {
-    return this.verbose(this.component, message)
+    return this.verbose(this.component, message, args)
   }
 
   info(message: string, ...args: any[]) {
-    return this.console.info(this.component, message)
+    return this.console.info(this.component, message, args)
   }
 
   verbose(message: string, ...args: any[]) {
-    return this.console.verbose(this.component, message)
+    return this.console.verbose(this.component, message, args)
   }
 
   warn(message: string, ...args: any[]) {
-    return this.console.warn(this.component, message)
+    return this.console.warn(this.component, message, args)
   }
 
   error(message: string, ...args: any[]) {
-    return this.console.error(this.component, message)
+    return this.console.error(this.component, message, args)
   }
 
   silly(message: string, ...args: any[]) {
-    return this.console.silly(this.component, message)
+    return this.console.silly(this.component, message, args)
   }
 }
 
@@ -97,7 +98,7 @@ export default class Logger {
       return instance
     }
 
-    const newLogger = new Logger(name)
+    const newLogger = new Logger(name, logHandlerList)
     Logger.loggerInstances.push(newLogger)
     return newLogger
   }

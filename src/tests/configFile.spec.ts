@@ -1,6 +1,6 @@
 import { assert, expect } from 'chai'
-import ConfigFile from '../lib/util/configFile'
-import { ProcessConfig, TaskConfig } from '../lib/processConfig'
+import ConfigFile from '../lib/util/configFile.js'
+import { ProcessConfig, TaskConfig } from '../lib/processConfig.js'
 
 const getSampleConfig = function (): [ProcessConfig, TaskConfig[]] {
   const taskConfig = {

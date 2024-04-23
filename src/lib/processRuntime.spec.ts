@@ -1,10 +1,10 @@
 import { assert } from 'chai'
-import { Process } from './processRuntime'
+import { Process } from './processRuntime.js'
 
 describe('Process Runtime Tests', () => {
   const taskConfig = {
     name: 'add',
-    path: './exampleTask',
+    path: './exampleTask.js',
   }
 
   it('Run Process', async () => {

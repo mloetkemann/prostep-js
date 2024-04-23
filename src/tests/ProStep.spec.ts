@@ -1,12 +1,12 @@
 import { assert } from 'chai'
-import ProStepJS from '..'
-import { ProcessConfig, TaskConfig } from '../lib/processConfig'
+import ProStepJS from '../index.js'
+import { ProcessConfig, TaskConfig } from '../lib/processConfig.js'
 import { EventEmit } from 'alpha8-lib'
 
 const getSampleConfig = function (): [ProcessConfig, TaskConfig[]] {
   const taskConfig = {
     name: 'add',
-    path: './exampleTask',
+    path: './exampleTask.js',
   }
 
   const processConfig = {
@@ -108,7 +108,7 @@ describe('ProStepJS Test', () => {
     const identifier = 'abc'
     EventEmit.getEmitter().then(emitter => {
       emitter.registerEvent('finishProcess').then(() => {
-        emitter.on('finishProcess', param => {
+        emitter.on('finishProcess', async param => {
           const finishIdentifier = param.get('asyncIdentifier')
           if (
             finishIdentifier &&

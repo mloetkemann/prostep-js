@@ -1,5 +1,5 @@
-import Logger from './logger'
-import { Step, InputMetadata } from './processConfig'
+import Logger from './logger.js'
+import { Step, InputMetadata } from './processConfig.js'
 
 export interface Executable {
   init(): Promise<void>

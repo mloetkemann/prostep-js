@@ -1,5 +1,5 @@
-import { ExecutableRuntimeContext } from './base'
-import { InputMetadata, TaskBase } from './processRuntime'
+import { ExecutableRuntimeContext } from './base.js'
+import { InputMetadata, TaskBase } from './processRuntime.js'
 
 function parseToNumber(value: unknown): number | undefined {
   return typeof value === 'number' ? value : undefined
@@ -16,6 +16,7 @@ export default class ExampleTask extends TaskBase {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async executeTask(context: ExecutableRuntimeContext) {
     const value1 = parseToNumber(context.input.get('value1'))
     const value2 = parseToNumber(context.input.get('value2'))

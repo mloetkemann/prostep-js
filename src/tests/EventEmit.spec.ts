@@ -1,5 +1,5 @@
 import { assert } from 'chai'
-import EventEmit from '../lib/util/eventEmit'
+import EventEmit from '../lib/util/eventEmit.js'
 
 describe('Event Emitter', () => {
   let called = false
@@ -8,7 +8,7 @@ describe('Event Emitter', () => {
     called = false
     const emitter = EventEmit.getEmitter()
     emitter.registerEvent('event')
-    emitter.on('event', () => (called = true))
+    emitter.on('event', async () => (called = true))
     await emitter.trigger('event', { __message: 'Test Event' })
     assert.equal(called, true)
   })

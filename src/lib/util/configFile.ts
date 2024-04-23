@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/require-await */
 import { readFile } from 'fs/promises'
 import { load } from 'js-yaml'
-import { ProcessConfig, TaskConfig } from '../processConfig'
-import Logger from '../logger'
+import { ProcessConfig, TaskConfig } from '../processConfig.js'
+import Logger from '../logger.js'
 
 interface ConfigFileContent {
   process: ProcessConfig[]
@@ -16,6 +17,7 @@ export default class ConfigFile {
     content: string
   ): Promise<[ProcessConfig[], TaskConfig[]]> {
     this.logger.verbose(`Try to parse as json file`)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const parsedContent = JSON.parse(content)
     if (typeof parsedContent == 'object') {
       this.logger.verbose(JSON.stringify(parsedContent))

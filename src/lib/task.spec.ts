@@ -1,10 +1,10 @@
 import { assert } from 'chai'
-import { TaskBase } from './task'
+import { TaskBase } from './task.js'
 
 describe('Task Tests', () => {
   const taskConfig = {
     name: 'add',
-    path: './exampleTask',
+    path: './exampleTask.js',
   }
 
   it('Run Task', async () => {
