@@ -23,8 +23,7 @@
     "build": "tsc --project .",
     "test": "npx mocha",
     "lint": "eslint .",
-    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
-    "prepare": "husky install"
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
   },
   "devDependencies": {
     "@eslint/js": "^9.1.1",
@@ -46,28 +45,12 @@
     "typescript-eslint": "^7.7.1"
   },
   "dependencies": {
-    "alpha8-lib": "link:../alpha8-lib",
+    "alpha8-lib": "^1.4.11",
     "axios": "^1.6.8",
     "execa": "^8.0.1",
     "js-yaml": "^4.1.0",
     "mime": "^4.0.3",
     "npmlog": "^7.0.1"
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
-  "release": {
-    "branches": [
-      "main"
-    ],
-    "plugins": [
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/changelog",
-      "@semantic-release/npm",
-      "@semantic-release/git"
-    ]
   },
   "alpha8Config": {
     "eventDriver": "local"
