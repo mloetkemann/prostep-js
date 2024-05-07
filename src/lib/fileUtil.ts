@@ -15,13 +15,14 @@ async function tryImport(path: string): Promise<any> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
     return taskCls.default
   } catch (e) {
-    logger.verbose(`Wrong path: ${path}`)
+    logger.trace(`Wrong path: ${path}`, e)
   }
 }
 
 export async function instantiateTask(relativePath: string): Promise<any> {
   let result
   let paths = ['']
+
   paths = paths.concat(dirname(fileURLToPath(import.meta.url)))
   paths = paths.concat(process.cwd())
   paths = paths.map(p => join(p, relativePath))

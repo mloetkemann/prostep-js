@@ -92,6 +92,14 @@ export default class Logger {
     this.logHandlerList.forEach(handler => handler.silly(message, args))
   }
 
+  trace(message: string, error: any, ...args: any[]) {
+    this.error(message, args)
+    if (error instanceof Error) {
+      this.error(error.message)
+      if (error.stack) this.verbose(error.stack)
+    }
+  }
+
   public static getLogger(name: string, logHandlerList?: LogHandler[]) {
     const instance = Logger.loggerInstances.find(el => el.getName() == name)
     if (instance) {
