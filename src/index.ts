@@ -4,6 +4,7 @@ import Logger from './lib/logger.js'
 import * as crypto from 'crypto'
 import ConfigFile from './lib/util/configFile.js'
 import { EventEmit, EventParameter } from 'alpha8-lib'
+import { ExecutableStatus } from './lib/base.js'
 
 export default class ProStepJS {
   private static inst: ProStepJS
@@ -26,11 +27,32 @@ export default class ProStepJS {
 
   private async init() {
     this.emitter = await EventEmit.getEmitter()
-    console.log('init)')
     await this.emitter.registerEvent('callProcess')
     this.emitter.on('callProcess', async param => {
-      return this._callProcess(param)
+      return await this._callProcess(param)
     })
+
+    await this.emitter.registerEvent('callForProcessStatus')
+    this.emitter.on('callForProcessStatus', async param => {
+      return this._callForProcessStatus(param)
+    })
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private async _callForProcessStatus(_param: EventParameter) {
+    const status = {
+      processes: new Array<{ key: string; status: ExecutableStatus }>(),
+    }
+    this.processInstances.forEach((proc, key) => {
+      const thisProcesss = {
+        key: key,
+        status: proc.getStatus(),
+      }
+      status.processes.push(thisProcesss)
+    })
+    this.logger.info(`Call for Status`)
+    this.logger.info(JSON.stringify(status))
+    await this.triggerEvent('statusCallback', status)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -38,8 +60,9 @@ export default class ProStepJS {
     const configFile = new ConfigFile(filePath)
     const [processConfigs, taskConfigs] = await configFile.readConfig()
     this.loadTaskConfig(taskConfigs)
-    return Promise.all(
-      processConfigs.map(processConfig => this.loadProcessConfig(processConfig))
+
+    processConfigs.forEach(processConfig =>
+      this.loadProcessConfig(processConfig)
     )
   }
 
@@ -66,12 +89,14 @@ export default class ProStepJS {
     const instanceUUID = crypto.randomUUID()
 
     const processConfig = this.processConfigurations.get(name)
+
     if (processConfig) {
       const taskConfigs = Array.from(
         this.taskConfigurations,
         ([, value]) => value
       )
       const process = new Process(processConfig, taskConfigs, asyncIdentifier)
+      this.logger.info(`Init Process ${instanceUUID}`)
       await process.init()
       this.processInstances.set(instanceUUID, process)
     }
@@ -109,11 +134,10 @@ export default class ProStepJS {
           uuid: processUUID,
           asyncIdentifier: process.getAsyncIdentifier(),
         })
-        throw e
       }
+    } else {
+      throw Error(`Could not find process with UUID ${processUUID}`)
     }
-
-    throw Error(`Could not find process with UUID ${processUUID}`)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -145,4 +169,5 @@ export default class ProStepJS {
 export * from './lib/logger.js'
 export * from './lib/processConfig.js'
 export * from './lib/processRuntime.js'
+export * from './lib/tasks/processTaskBase.js'
 export { EventEmit as ProStepEventEmitter }

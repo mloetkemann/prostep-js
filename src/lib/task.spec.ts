@@ -2,10 +2,29 @@ import { assert } from 'chai'
 import { TaskBase } from './task.js'
 
 describe('Task Tests', () => {
+  const taskDeleteConfig = {
+    name: 'delete',
+    path: './tasks/filesystemDeleteTask.js',
+  }
   const taskConfig = {
     name: 'add',
     path: './exampleTask.js',
   }
+
+  it('Instantiate delete Task', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-array-constructor
+    const args = new Array()
+    args.push(['path', './demo.json'])
+
+    const step = {
+      stepName: 'Delete',
+      name: 'delete',
+      type: 'Task',
+      arguments: args,
+    }
+
+    const task = await TaskBase.getInstance(step, taskDeleteConfig)
+  })
 
   it('Run Task', async () => {
     // eslint-disable-next-line @typescript-eslint/no-array-constructor

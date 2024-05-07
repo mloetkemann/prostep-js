@@ -1,6 +1,13 @@
 import Logger from './logger.js'
 import { Step, InputMetadata } from './processConfig.js'
 
+export enum ExecutableStatus {
+  READY = 'READY',
+  RUNNING = 'RUNNING',
+  FINISHED = 'FINISHED',
+  FAILED = 'FAILED',
+}
+
 export interface Executable {
   init(): Promise<void>
   getResults(): Map<string, unknown> | undefined
@@ -8,6 +15,7 @@ export interface Executable {
   getConfig(): Step
   run(context: ExecutableRuntimeContext): Promise<void>
   getInputMetadata(): InputMetadata
+  getStatus(): ExecutableStatus
 }
 
 export interface ExecutableRuntimeContext {
@@ -18,6 +26,7 @@ export interface ExecutableRuntimeContext {
 export class ExecutableBase implements Executable {
   protected logger!: Logger
   protected results: Map<string, unknown> | undefined
+  protected status: ExecutableStatus = ExecutableStatus.READY
 
   getInputMetadata(): InputMetadata {
     throw new Error('Method not implemented.')
@@ -44,7 +53,18 @@ export class ExecutableBase implements Executable {
 
   async run(context: ExecutableRuntimeContext): Promise<void> {
     this.validateInput(context)
-    await this.executeTask(context)
+    this.status = ExecutableStatus.RUNNING
+    try {
+      await this.executeTask(context)
+    } catch (e) {
+      this.status = ExecutableStatus.FAILED
+      throw e
+    }
+    this.status = ExecutableStatus.FINISHED
+  }
+
+  getStatus(): ExecutableStatus {
+    return this.status
   }
 
   validateInput(context: ExecutableRuntimeContext): void {
@@ -57,8 +77,11 @@ export class ExecutableBase implements Executable {
             throw Error(`Input field "${field.name}" missing`)
           }
 
-          if (typeof current_field !== field.type) {
-            throw Error('Wrong Type')
+          if (typeof current_field === 'string' && field.type === 'number') {
+            const value = parseInt(current_field)
+            if (!value) throw new Error('wrong type')
+          } else if (typeof current_field !== field.type) {
+            throw new Error('Wrong Type')
           }
         }
       })

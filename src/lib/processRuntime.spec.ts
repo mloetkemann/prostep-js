@@ -1,6 +1,8 @@
 import { assert } from 'chai'
 import { Process } from './processRuntime.js'
 
+const PROCESS_NODE = process
+
 describe('Process Runtime Tests', () => {
   const taskConfig = {
     name: 'add',
@@ -184,5 +186,48 @@ describe('Process Runtime Tests', () => {
     }
     await process.run(processContext)
     assert.equal(processContext.result.get('result'), 11)
+  })
+
+  it('Run Process with env', async () => {
+    PROCESS_NODE.env['TEST_B'] = '3'
+    const processConfig = {
+      name: 'CalcProcessTest1',
+      environment: ['TEST_B'],
+      inputs: {
+        fields: [{ name: 'a', type: 'number' }],
+      },
+      steps: [
+        {
+          stepName: 'Add',
+          name: 'add',
+          type: 'Task',
+          arguments: [
+            {
+              key: 'value1',
+              value: '${input:a}',
+            },
+            {
+              key: 'value2',
+              value: '${env:TEST_B}',
+            },
+          ],
+        },
+      ],
+      results: [
+        {
+          key: 'result',
+          value: '${Add:result}',
+        },
+      ],
+    }
+
+    const process = new Process(processConfig, [taskConfig])
+    await process.init()
+    const processContext = {
+      input: new Map<string, unknown>([['a', 2]]),
+      result: new Map<string, unknown>(),
+    }
+    await process.run(processContext)
+    assert.equal(processContext.result.get('result'), 5)
   })
 })

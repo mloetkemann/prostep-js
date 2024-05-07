@@ -5,13 +5,19 @@ import {
   TaskConfig,
   InputMetadata,
 } from './processConfig.js'
-import { Executable, ExecutableBase, ExecutableRuntimeContext } from './base.js'
+import {
+  Executable,
+  ExecutableBase,
+  ExecutableRuntimeContext,
+  ExecutableStatus,
+} from './base.js'
 import { TaskBase } from './task.js'
 
 export class Process extends ExecutableBase {
   protected results: Map<string, unknown> | undefined
   private variables = new Map<string, unknown>()
   private constants = new Map<string, unknown>()
+  private environment = new Map<string, string>()
   private steps = Array<Executable>()
 
   constructor(
@@ -24,6 +30,15 @@ export class Process extends ExecutableBase {
     if (processConfig.constants) {
       processConfig.constants.forEach(constant => {
         this.constants.set(constant.key, constant.value)
+      })
+    }
+
+    if (processConfig.environment) {
+      processConfig.environment.forEach(environtmentVar => {
+        const value = process.env[environtmentVar]
+        if (value) {
+          this.environment.set(environtmentVar, value)
+        }
       })
     }
   }
@@ -45,7 +60,8 @@ export class Process extends ExecutableBase {
         throw Error('Could not find Task Config for instantiation')
       }
     } catch (e) {
-      this.logger.error('Error Instantiation')
+      this.logger.trace('Error Instantiation', e)
+
       throw e
     }
   }
@@ -88,7 +104,7 @@ export class Process extends ExecutableBase {
   }
 
   private replaceParameter(value: string): unknown {
-    const re = /\$\{([a-z0-9]*:[a-z0-9]*)\}/i // RegExp for ${input:a)}
+    const re = /\$\{([a-z0-9]*:[a-z0-9_]*)\}/i // RegExp for ${input:a)}
     const match = value.match(re)
     if (match) {
       const key = match[1]
@@ -125,6 +141,8 @@ export class Process extends ExecutableBase {
   async run(context: ExecutableRuntimeContext): Promise<void> {
     this.logger.info(`Run Process`)
     this.logger.info('Validate Input')
+
+    this.status = ExecutableStatus.RUNNING
     try {
       this.validateInput(context)
     } catch (err: unknown) {
@@ -138,9 +156,20 @@ export class Process extends ExecutableBase {
       this.mapContext(this.constants, this.variables, 'const')
     }
 
-    for (const step of this.steps) {
-      await this.runSingleStep(step)
+    this.mapContext(this.environment, this.variables, 'env')
+
+    try {
+      for (const step of this.steps) {
+        await this.runSingleStep(step)
+      }
+    } catch (e) {
+      this.status = ExecutableStatus.FAILED
+      this.logger.trace(`Process stopped`, e)
+      throw e
     }
+
+    this.status = ExecutableStatus.FINISHED
+
     this.processConfig.results.forEach(resultConfig => {
       context.result.set(
         resultConfig.key,

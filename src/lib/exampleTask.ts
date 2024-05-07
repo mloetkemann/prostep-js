@@ -2,7 +2,9 @@ import { ExecutableRuntimeContext } from './base.js'
 import { InputMetadata, TaskBase } from './processRuntime.js'
 
 function parseToNumber(value: unknown): number | undefined {
-  return typeof value === 'number' ? value : undefined
+  if (typeof value === 'number') return value
+  if (typeof value === 'string') return parseInt(value)
+  return undefined
 }
 
 export default class ExampleTask extends TaskBase {
