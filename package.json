@@ -50,6 +50,7 @@
     "axios": "^1.6.8",
     "execa": "^8.0.1",
     "js-yaml": "^4.1.0",
+    "mime": "^4.0.3",
     "npmlog": "^7.0.1"
   },
   "commitlint": {
