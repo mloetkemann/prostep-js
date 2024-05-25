@@ -42,7 +42,7 @@ export default class HttpUploadFileTask extends HttpPostTask {
 
       fileStream.on('end', function () {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        data.append('file', new Blob(chunks), 'file.mp3')
+        data.append('file', new Blob(chunks), 'file.mp3;type=audio/mpeg')
         console.log(data)
 
         resolve(data)
