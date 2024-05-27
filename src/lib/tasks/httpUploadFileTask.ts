@@ -21,6 +21,33 @@ export default class HttpUploadFileTask extends HttpPostTask {
     throw new Error('could not find path')
   }
 
+  private getFileName(): string {
+    let filename = parseToString(this.context?.input.get('filename'))
+    if (!filename) {
+      const path = parseToString(this.context?.input.get('path'))
+      if (path) filename = path.replace(/^.*[\\/]/, '')
+    }
+
+    if (filename) return filename
+    throw new Error('could not find filename')
+  }
+
+  private appendPayload(data: FormData): FormData {
+    const payload = parseToString(this.context?.input.get('payload'))
+    if (payload) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const payloadObj = JSON.parse(payload)
+      if (payloadObj) {
+        // eslint-disable-next-line prefer-const
+        for (let key in payloadObj) {
+          data.append(key, payloadObj[key])
+        }
+      }
+    }
+
+    return data
+  }
+
   protected getMethod(): Method {
     return 'patch'
   }
@@ -30,9 +57,12 @@ export default class HttpUploadFileTask extends HttpPostTask {
     const path = this.getFilePath()
     const logger = this.logger
 
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const that = this
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const p = new Promise<any>(function (resolve) {
-      const data = new FormData()
+      let data = new FormData()
       logger.info(`Upload file ${path}`)
       const fileStream = fs.createReadStream(path)
       const chunks: BinaryLike[] = []
@@ -42,8 +72,8 @@ export default class HttpUploadFileTask extends HttpPostTask {
 
       fileStream.on('end', function () {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        data.append('file', new Blob(chunks), 'file.mp3')
-        data.append('type', 'audio/mpeg')
+        data = that.appendPayload(data)
+        data.append('file', new Blob(chunks), that.getFileName())
         console.log(data)
 
         resolve(data)
@@ -59,6 +89,12 @@ export default class HttpUploadFileTask extends HttpPostTask {
   getInputMetadata(): InputMetadata {
     const metadata = super.getInputMetadata()
     metadata.fields.concat([{ name: 'path', type: 'string', required: true }])
+    metadata.fields.concat([
+      { name: 'payload', type: 'string', required: false },
+    ])
+    metadata.fields.concat([
+      { name: 'filename', type: 'string', required: true },
+    ])
 
     return metadata
   }
