@@ -52,6 +52,11 @@ export default class HttpUploadFileTask extends HttpPostTask {
     return 'patch'
   }
 
+  private getFileType(): { type: string } | undefined {
+    const fileType = parseToString(this.context?.input.get('filetype'))
+    if (fileType) return { type: fileType }
+  }
+
   // eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-explicit-any
   protected async getData(): Promise<any> {
     const path = this.getFilePath()
@@ -73,11 +78,12 @@ export default class HttpUploadFileTask extends HttpPostTask {
       fileStream.on('end', function () {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         data = that.appendPayload(data)
-        data.append(
-          'file',
-          new Blob(chunks, { type: 'audio/mpeg' }),
-          that.getFileName()
-        )
+        const fileType = that.getFileType()
+        if (fileType) {
+          data.append('file', new Blob(chunks, fileType), that.getFileName())
+        } else {
+          data.append('file', new Blob(chunks), that.getFileName())
+        }
         console.log(data)
 
         resolve(data)
@@ -98,6 +104,9 @@ export default class HttpUploadFileTask extends HttpPostTask {
     ])
     metadata.fields.concat([
       { name: 'filename', type: 'string', required: true },
+    ])
+    metadata.fields.concat([
+      { name: 'filetype', type: 'string', required: false },
     ])
 
     return metadata
