@@ -24,7 +24,7 @@ export default class HttpDownloadFileTask extends HttpGetTask {
       const contentType = headers['content-type'].toString()
 
       if (contentType) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
         const ext = mime.getExtension(contentType)
         const uuid = crypto.randomUUID()
         return `${uuid}.${ext}`

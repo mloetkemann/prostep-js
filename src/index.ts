@@ -41,11 +41,18 @@ export default class ProStepJS {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private async _callForProcessStatus(_param: EventParameter) {
     const status = {
-      processes: new Array<{ key: string; status: ExecutableStatus }>(),
+      processes: new Array<{
+        key: string
+        asyncIdentifier: string
+        status: ExecutableStatus
+      }>(),
     }
+
     this.processInstances.forEach((proc, key) => {
+      const identifier = proc.getAsyncIdentifier()
       const thisProcesss = {
         key: key,
+        asyncIdentifier: identifier ? identifier : '',
         status: proc.getStatus(),
       }
       status.processes.push(thisProcesss)
